@@ -25,21 +25,23 @@
 #ifndef _DOMINOS_HPP_
 #define _DOMINOS_HPP_
 
-namespace cs296
-{
+ namespace cs296
+ {
   //! This is the class that sets up the Box2D simulation world
   //! Notice the public inheritance - why do we inherit the base_sim_t class?
   class dominos_t : public base_sim_t
   {
+    b2Body* dynamicBody;
   public:
-    
+
     dominos_t();
     
     static base_sim_t* create()
     {
       return new dominos_t;
     }
+    
   };
 }
-  
+
 #endif
