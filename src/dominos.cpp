@@ -50,6 +50,9 @@ namespace cs296
     /// b2BodyDef bd : ____
     /// b2EdgeShape shape: passed to b1->CreateFixture. Value set to (b2Vec2(-90.0f, 0.0f), b2Vec2(90.0f, 0.0f) \n
 
+	float xpos = 0;
+	float scale = 3;
+	float ypos = 0;
     b2Body* b1;  
     {
       
@@ -63,9 +66,6 @@ namespace cs296
     {
       //The steam engine scaled and relatively positioned
       //The (xpos,ypos) denotes the bottom center of engine hull
-      float scale=3;
-      float xpos=0;
-      float ypos=0;
       b2Vec2 vertices[18];
       vertices[17].Set(xpos-4*scale,ypos+0.5*scale);
       vertices[16].Set(xpos-4*scale,ypos+1.5*scale);
@@ -96,23 +96,37 @@ namespace cs296
       wedgefd.restitution = 1.0f;
       
       
-      b2Vec2 v1[14];
-      v1[13].Set(xpos-5*scale,ypos+5*scale);
-      v1[12].Set(xpos-5*scale,ypos+2*scale);
-      v1[11].Set(xpos-4*scale,ypos+2*scale);
-      v1[10].Set(xpos-4*scale,ypos+3.5*scale);
-      v1[9].Set(xpos-2*scale,ypos+5*scale);
-      v1[8].Set(xpos-3.5*scale,ypos+5*scale);
-      v1[7].Set(xpos-3.5*scale,ypos+7*scale);
-      v1[6].Set(xpos-0.5*scale,ypos+7*scale);
-      v1[5].Set(xpos-0.5*scale,ypos+8.5*scale);
-      v1[4].Set(xpos-1*scale,ypos+8.5*scale);
-      v1[3].Set(xpos-1*scale,ypos+7.5*scale);
-      v1[2].Set(xpos-4*scale,ypos+7.5*scale);
-      v1[1].Set(xpos-4*scale,ypos+5*scale);
-      v1[0].Set(xpos-5*scale,ypos+5*scale);
-      	  b2ChainShape chain1;
-	  chain1.CreateChain(v1, 14);
+      b2Vec2 v2[10];
+      b2Vec2 v1[9];
+      v2[9].Set(xpos-5*scale,ypos+5*scale);
+      v2[8].Set(xpos-5*scale,ypos+2*scale);
+      v2[7].Set(xpos-4*scale,ypos+2*scale);
+      v2[6].Set(xpos-4*scale,ypos+3.5*scale);
+      v2[5].Set(xpos-2*scale,ypos+5*scale);
+      v2[4].Set(xpos-3.5*scale,ypos+5*scale);
+      v2[3].Set(xpos-3.5*scale,ypos+5.39*scale);
+      v2[2].Set(xpos-4*scale,ypos+5.39*scale);
+      v2[1].Set(xpos-4*scale,ypos+5*scale);
+      v2[0].Set(xpos-5*scale,ypos+5*scale);
+      b2ChainShape chain2;
+	  chain2.CreateChain(v2, 10);
+      v1[8].Set(xpos-4*scale,ypos+7.5*scale);
+      v1[7].Set(xpos-4*scale,ypos+5.61*scale);
+      v1[6].Set(xpos-3.5*scale,ypos+5.61*scale);
+      v1[5].Set(xpos-3.5*scale,ypos+7*scale);
+      v1[4].Set(xpos-0.5*scale,ypos+7*scale);
+      v1[3].Set(xpos-0.5*scale,ypos+8.5*scale);
+      v1[2].Set(xpos-1*scale,ypos+8.5*scale);
+      v1[1].Set(xpos-1*scale,ypos+7.5*scale);
+      v1[0].Set(xpos-4*scale,ypos+7.5*scale);
+	  b2ChainShape chain1;
+	  chain1.CreateChain(v1, 9);
+      
+      b2FixtureDef fd3;
+      fd3.shape = &chain2;
+      fd3.density = 10.0f;
+      fd3.friction = 0.0f;
+      fd3.restitution = 1.0f;
       
       
       b2FixtureDef fd2;
@@ -128,13 +142,11 @@ namespace cs296
       b2Body* box1 = m_world->CreateBody(&wedgebd);
       box1->CreateFixture(&wedgefd);
       box1->CreateFixture(&fd2);
+      box1->CreateFixture(&fd3);
 }
     {
       //The steam engine scaled and relatively positioned
       //The (xpos,ypos) denotes the bottom center 
-      float scale=3;
-      float xpos=0;
-      float ypos=0;
       b2Body* sbody;
       b2Vec2 vertices[11];
       vertices[10].Set(xpos-3.25*scale,ypos+3*scale);
@@ -157,15 +169,12 @@ namespace cs296
       wedgefd.friction = 0.0f;
       wedgefd.restitution = 1.0f;
       b2BodyDef wedgebd;
-      wedgebd.type = b2_kinematicBody;
+      wedgebd.type = b2_staticBody;
       wedgebd.position.Set(0.0f, 0.0f);
       sbody = m_world->CreateBody(&wedgebd);
       sbody->CreateFixture(&wedgefd);
 }
 {
-	  float scale=3;
-      float xpos=0;
-      float ypos=0;
       b2BodyDef *bd = new b2BodyDef;
       bd->type = b2_dynamicBody;
       bd->position.Set(xpos,ypos);
@@ -177,7 +186,7 @@ namespace cs296
       fd1->restitution = 1.f;
       fd1->shape = new b2PolygonShape;
       b2PolygonShape bs1;
-      bs1.SetAsBox(xpos+0.15*scale,ypos+1.25*scale, b2Vec2(xpos+0*scale,ypos+1.75*scale), 0);
+      bs1.SetAsBox(0.15*scale,1.24*scale, b2Vec2(0*scale,1.75*scale), 0);
       fd1->shape = &bs1;
       b2FixtureDef *fd2 = new b2FixtureDef;
       fd2->density = 0.1;
@@ -185,7 +194,7 @@ namespace cs296
       fd2->restitution = 1.f; 
       fd2->shape = new b2PolygonShape;
       b2PolygonShape bs2;
-      bs2.SetAsBox(xpos+1*scale,ypos+0.2*scale, b2Vec2(xpos-1.15*scale,ypos+1.75*scale), 0);
+      bs2.SetAsBox(3*scale,0.2*scale, b2Vec2(-3.15*scale,1.75*scale), 0);
       fd2->shape = &bs2;
       fd2->filter.groupIndex = -1;
       b2Body* box1 = m_world->CreateBody(bd);
@@ -194,22 +203,35 @@ namespace cs296
 }
 	{
       b2PolygonShape shape;
-      shape.SetAsBox(6.0f, 0.25f);
+      shape.SetAsBox(2.0f*scale, 0.08f*scale);
 	
       b2BodyDef bd;
-      bd.position.Set(0, 25.5f);
+      bd.position.Set(xpos,ypos+ 8.5*scale);
       b2Body* ground = m_world->CreateBody(&bd);
       ground->CreateFixture(&shape, 0.0f);
     }
     
+    {
+      b2PolygonShape shape1;
+      shape1.SetAsBox(0.25f*scale, 0.1f*scale);
+	
+      b2BodyDef bd;
+      b2FixtureDef *fd1 = new b2FixtureDef;
+      fd1->shape = new b2PolygonShape;
+      bd.position.Set(xpos - 3.75*scale,ypos+ 5.5*scale);
+      fd1->shape = &shape1;
+      fd1->filter.categoryBits = 2;
+      fd1->filter.maskBits = 1;
+      fd1->filter.groupIndex = -2;
+      b2Body* ground = m_world->CreateBody(&bd);
+      ground->CreateFixture(fd1);
+    }
+    
     
         {
-			float xpos = 0;
-			float scale = 3;
-			float ypos = 0;
       b2BodyDef *bd = new b2BodyDef;
       bd->type = b2_dynamicBody;
-      bd->position.Set(0*scale,);
+      bd->position.Set(xpos,ypos+5*scale);
       bd->fixedRotation = true;
       
       //The open box
@@ -219,7 +241,7 @@ namespace cs296
       fd1->restitution = 1.f;
       fd1->shape = new b2PolygonShape;
       b2PolygonShape bs1;
-      bs1.SetAsBox(2*scale,0.2*scale, b2Vec2(xpos+0.f*scale,ypos-1.9f*scale), 0);
+      bs1.SetAsBox(1.9*scale,0.1*scale, b2Vec2(0.5f*scale,0.5f*scale), 0);
       fd1->shape = &bs1;
       b2FixtureDef *fd2 = new b2FixtureDef;
       fd2->density = 10.0;
@@ -227,7 +249,7 @@ namespace cs296
       fd2->restitution = 1.f; 
       fd2->shape = new b2PolygonShape;
       b2PolygonShape bs2;
-      bs2.SetAsBox(0.2*scale,2*scale, b2Vec2(xpos+2.0f*scale,ypos+0.f*scale), 0);
+      bs2.SetAsBox(0.2*scale,0.2*scale, b2Vec2(2.2*scale,0.2f*scale), 0);
       fd2->shape = &bs2;
       b2FixtureDef *fd3 = new b2FixtureDef;
       fd3->density = 10.0;
@@ -235,33 +257,32 @@ namespace cs296
       fd3->restitution = 1.f;
       fd3->shape = new b2PolygonShape;
       b2PolygonShape bs3;
-      bs3.SetAsBox(0.2*scale,2*scale, b2Vec2(xpos-2.0f*scale,ypos+0.f*scale), 0);
+      bs3.SetAsBox(0.2*scale,.2*scale, b2Vec2(-1.2*scale,0.2f*scale), 0);
       fd3->shape = &bs3;
+      b2FixtureDef *fd4 = new b2FixtureDef;
+      fd4->density = 10.0;
+      fd4->friction = 0;
+      fd4->restitution = 1.f;
+      fd4->filter.groupIndex = -1; 
+      fd4->shape = new b2PolygonShape;
+      b2PolygonShape bs4;
+      bs4.SetAsBox(3*scale,0.1*scale, b2Vec2(-4.f*scale,0.5f*scale), 0);
+      fd4->shape = &bs4;
        
       b2Body* box1 = m_world->CreateBody(bd);
       box1->CreateFixture(fd1);
       box1->CreateFixture(fd2);
       box1->CreateFixture(fd3);
+      box1->CreateFixture(fd4);
 }
-    	/*{
-			float xpos=0
-			float ypos=0;
-			float scale=3;
-      b2PolygonShape shape;
-      shape.SetAsBox(xpos +6.0f*scale,ypos+ 0.25f*scale);
-      b2BodyDef bd;
-      bd.type = b2_dynamicBody;
-      bd.position.Set(xpos - 2*scale,ypos + 6*scale);
-      b2Body* ground = m_world->CreateBody(&bd);
-      ground->CreateFixture(&shape, 0.0f);
-    }*/
+
 {
-	  int num_balls=100;
+	  int num_balls=1;
 	  for (int i = 0; i < num_balls; i++) {
       float angle = (i / (float)num_balls) * 2 *3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
 	  
-	  b2Vec2 center = b2Vec2(0,24);
+	  b2Vec2 center = b2Vec2(xpos+0,ypos+8*scale);
 	  int blastPower=100;
       b2BodyDef bd;
       bd.type = b2_dynamicBody;
@@ -282,9 +303,11 @@ namespace cs296
       fd.friction = 0; // friction not necessary
       fd.restitution = 1.f; // high restitution to reflect off obstacles
       fd.filter.groupIndex = -1; // particles should not collide with each other
+      fd.filter.categoryBits = 1;
+      fd.filter.maskBits = 2;
       body->CreateFixture( &fd );
   }	
 }
 }
-  sim_t *sim = new sim_t("Dominos", dominos_t::create);
+  sim_t *sim = new sim_t("Steam Engine Simulation", dominos_t::create);
 }
