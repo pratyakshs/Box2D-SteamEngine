@@ -17,14 +17,18 @@
 */
 
 #include "cs296_base.hpp"
+#include "dominos.hpp"
 #include <cstdio>
 #include <stdio.h>    
 #include <stdlib.h>     
 #include <time.h>      
 using namespace std;
 using namespace cs296;
-
-
+extern float xpos;
+extern float ypos;
+extern float scale;
+extern bool accl;
+extern bool stop;
 base_sim_t::base_sim_t()
 {
 	b2Vec2 gravity;
@@ -124,12 +128,12 @@ void base_sim_t::step(settings_t* settings)
   m_world->Step(time_step, settings->velocity_iterations, settings->position_iterations);
   
   {
-	  float xpos=0;
-	  float ypos=0;
-	  float scale=3;
-	  int num_balls=1;
+	  int numballs;
+	  if(accl)numballs=3;
+	  else if(stop)numballs=0;
+	  else numballs=0;
 	    //srand (time(NULL));
-	  for (int i = 0; i < num_balls; i++) {
+	  for (int i = 0; i < numballs; i++) {
       float angle = (rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
 	  
@@ -150,10 +154,11 @@ void base_sim_t::step(settings_t* settings)
   
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 60 / (float)num_balls; // very high - shared across all particles
+      fd.density = 60; // very high - shared across all particles
       fd.friction = 0; // friction not necessary
       fd.restitution = 1.f; // high restitution to reflect off obstacles
       fd.filter.groupIndex = -1; // particles should not collide with each other
+      fd.filter.categoryBits = 0x0001; 
       body->CreateFixture( &fd );
   }	
 }

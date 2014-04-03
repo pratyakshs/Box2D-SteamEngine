@@ -7,13 +7,18 @@
 //! These are user defined include files
 //! Included in double quotes - the path to find these has to be given at compile time
 #include "callbacks.hpp"
+#include "dominos.hpp"
 
 #ifndef __APPLE__
 #include "GL/glui.h"
 #else
 #include "GL/glui.h"
 #endif
-
+extern float xpos;
+extern float ypos;
+extern float scale;
+extern bool accl;
+extern bool stop;
 //! The namespace protects the global variables and other names from
 //! clashes in scope. Read about the use of named and unnamed
 //! namespaces in C++ Figure out where all the datatypes used below
@@ -116,7 +121,18 @@ namespace cs296
     case 'p':
       settings.pause = !settings.pause;
       break;
-      
+    case 'w':
+		stop=false;
+		accl=true;
+		break;
+	case 's':
+		stop=true;
+		accl=false;
+      break;
+	case 'q':
+		stop=false;
+		accl=false;
+      break;      
       //! The default case. Why is this needed?
     default:
       if (test)

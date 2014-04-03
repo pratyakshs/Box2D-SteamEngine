@@ -36,13 +36,17 @@
 using namespace std;
 
 #include "dominos.hpp"
-
+   
+  	float xpos = 0;///the x-ordinate of engine center. Center refers to bottom center of engine
+	float scale = 3;///the scale for engine
+	float ypos = 0;///the y-ordinate of engine center. Center refers to bottom center of engine
+	bool accl = false;///This  varible controls the acceleration of steam enngine
+	bool stop = false;///This controls the breaks on engine
 namespace cs296
 {
   /**  The is the constructor 
    * This is the documentation block for the constructor.
    */ 
-  
   dominos_t::dominos_t()
   {
     /// b2Body* b1: Brief pointer to the static body ground. \n
@@ -50,10 +54,7 @@ namespace cs296
     /// b2BodyDef bd : ____
     /// b2EdgeShape shape: passed to b1->CreateFixture. Value set to (b2Vec2(-90.0f, 0.0f), b2Vec2(90.0f, 0.0f) \n
 
-	float xpos = 0;
-	float scale = 3;
-	float ypos = 0;
-    b2Body* b1;  
+	    b2Body* b1; ///The ground body 
     {
       
       b2EdgeShape shape; 
@@ -62,7 +63,7 @@ namespace cs296
       b1 = m_world->CreateBody(&bd); 
       b1->CreateFixture(&shape, 0.0f);
     }
-    
+    ///This part corresponds to exterior part of the engine
     {
       //The steam engine scaled and relatively positioned
       //The (xpos,ypos) denotes the bottom center of engine hull
@@ -86,14 +87,14 @@ namespace cs296
       vertices[1].Set(xpos+4*scale,ypos+0.5*scale);
       vertices[0].Set(xpos-4*scale,ypos+0.5*scale);
       
-            b2ChainShape chain;
+      b2ChainShape chain;
 	  chain.CreateChain(vertices, 18);
 	  //chain.CreateLoop(vertices, 8);
-      b2FixtureDef wedgefd;
-      wedgefd.shape = &chain;
-      wedgefd.density = 10.0f;
-      wedgefd.friction = 0.0f;
-      wedgefd.restitution = 1.0f;
+      b2FixtureDef fd1;
+      fd1.shape = &chain;
+      fd1.density = 10.0f;
+      fd1.friction = 0.0f;
+      fd1.restitution = 1.0f;
       
       
       b2Vec2 v2[10];
@@ -119,8 +120,8 @@ namespace cs296
       v1[2].Set(xpos-1*scale,ypos+8.5*scale);
       v1[1].Set(xpos-1*scale,ypos+7.5*scale);
       v1[0].Set(xpos-4*scale,ypos+7.5*scale);
-	  b2ChainShape chain1;
-	  chain1.CreateChain(v1, 9);
+	  b2ChainShape chain3;
+	  chain3.CreateChain(v1, 9);
       
       b2FixtureDef fd3;
       fd3.shape = &chain2;
@@ -130,24 +131,25 @@ namespace cs296
       
       
       b2FixtureDef fd2;
-      fd2.shape = &chain1;
+      fd2.shape = &chain3;
       fd2.density = 10.0f;
       fd2.friction = 0.0f;
       fd2.restitution = 1.0f;
       
-      b2BodyDef wedgebd;
-      wedgebd.position.Set(0.0f, 0.0f);
-      wedgebd.type = b2_staticBody;
+      b2BodyDef engine;
+      engine.position.Set(0.0f, 0.0f);
+      engine.type = b2_staticBody;
              
-      b2Body* box1 = m_world->CreateBody(&wedgebd);
-      box1->CreateFixture(&wedgefd);
+      b2Body* box1 = m_world->CreateBody(&engine);
+      box1->CreateFixture(&fd1);
       box1->CreateFixture(&fd2);
       box1->CreateFixture(&fd3);
 }
+///Below block corresponds to interior part of engine
     {
       //The steam engine scaled and relatively positioned
       //The (xpos,ypos) denotes the bottom center 
-      b2Body* sbody;
+      b2Body* engine_int;
       b2Vec2 vertices[11];
       vertices[10].Set(xpos-3.25*scale,ypos+3*scale);
       vertices[9].Set(xpos+3.25*scale,ypos+3*scale);
@@ -163,17 +165,28 @@ namespace cs296
       b2ChainShape chain;
 	  chain.CreateChain(vertices, 11);
 	  //chain.CreateLoop(vertices, 8);
-      b2FixtureDef wedgefd;
-      wedgefd.shape = &chain;
-      wedgefd.density = 10.0f;
-      wedgefd.friction = 0.0f;
-      wedgefd.restitution = 1.0f;
-      b2BodyDef wedgebd;
-      wedgebd.type = b2_staticBody;
-      wedgebd.position.Set(0.0f, 0.0f);
-      sbody = m_world->CreateBody(&wedgebd);
-      sbody->CreateFixture(&wedgefd);
+	  b2FixtureDef exhaust;
+	  b2EdgeShape shape; 
+      shape.Set(b2Vec2(-2.25f*scale, 3.5f*scale), b2Vec2(2.25*scale, 3.5f*scale));
+      exhaust.shape=&shape;
+      exhaust.restitution = 0.f;
+      exhaust.friction = 1;
+      exhaust.density = 10.0f;
+      b2FixtureDef enginefd;
+      enginefd.shape = &chain;
+      enginefd.density = 10.0f;
+      enginefd.friction = 1.0f;
+      enginefd.restitution = 0.0f;
+      b2BodyDef enginebd;
+      enginebd.type = b2_staticBody;
+      enginebd.position.Set(0.0f, 0.0f);
+      engine_int = m_world->CreateBody(&enginebd);
+      engine_int->CreateFixture(&enginefd);
+      engine_int->CreateFixture(&exhaust);
+      
 }
+
+///Piston rod of engine
 {
       b2BodyDef *bd = new b2BodyDef;
       bd->type = b2_dynamicBody;
@@ -197,10 +210,11 @@ namespace cs296
       bs2.SetAsBox(3*scale,0.2*scale, b2Vec2(-3.15*scale,1.75*scale), 0);
       fd2->shape = &bs2;
       fd2->filter.groupIndex = -1;
-      b2Body* box1 = m_world->CreateBody(bd);
-      box1->CreateFixture(fd1);
-      box1->CreateFixture(fd2);
+      b2Body* piston = m_world->CreateBody(bd);
+      piston->CreateFixture(fd1);
+      piston->CreateFixture(fd2);
 }
+///The upper cover of engine
 	{
       b2PolygonShape shape;
       shape.SetAsBox(2.0f*scale, 0.08f*scale);
@@ -210,7 +224,8 @@ namespace cs296
       b2Body* ground = m_world->CreateBody(&bd);
       ground->CreateFixture(&shape, 0.0f);
     }
-    
+///The invisible block needed to block particles from going outside 
+///the engine hull from valve rod ending   
     {
       b2PolygonShape shape1;
       shape1.SetAsBox(0.25f*scale, 0.1f*scale);
@@ -220,14 +235,31 @@ namespace cs296
       fd1->shape = new b2PolygonShape;
       bd.position.Set(xpos - 3.75*scale,ypos+ 5.5*scale);
       fd1->shape = &shape1;
-      fd1->filter.categoryBits = 2;
-      fd1->filter.maskBits = 1;
       fd1->filter.groupIndex = -2;
-      b2Body* ground = m_world->CreateBody(&bd);
-      ground->CreateFixture(fd1);
+      fd1->filter.maskBits  = 0x0001;
+      fd1->filter.categoryBits  = 0x0002;
+      b2Body* block = m_world->CreateBody(&bd);
+      block->CreateFixture(fd1);
+      
+    }
+    {
+      b2PolygonShape shape1;
+      shape1.SetAsBox(0.5f*scale, 0.19f*scale);
+	
+      b2BodyDef bd;
+      b2FixtureDef *fd1 = new b2FixtureDef;
+      fd1->shape = new b2PolygonShape;
+      bd.position.Set(xpos - 4.5*scale,ypos+ 1.76*scale);
+      fd1->shape = &shape1;
+      fd1->filter.groupIndex = -2;
+      fd1->filter.maskBits  = 0x0001;
+      fd1->filter.categoryBits  = 0x0002;
+      b2Body* block = m_world->CreateBody(&bd);
+      block->CreateFixture(fd1);
+      
     }
     
-    
+///The valve rod of engine    
         {
       b2BodyDef *bd = new b2BodyDef;
       bd->type = b2_dynamicBody;
@@ -263,49 +295,48 @@ namespace cs296
       fd4->density = 10.0;
       fd4->friction = 0;
       fd4->restitution = 1.f;
-      fd4->filter.groupIndex = -1; 
+      fd4->filter.groupIndex = -1;
       fd4->shape = new b2PolygonShape;
       b2PolygonShape bs4;
       bs4.SetAsBox(3*scale,0.1*scale, b2Vec2(-4.f*scale,0.5f*scale), 0);
       fd4->shape = &bs4;
        
-      b2Body* box1 = m_world->CreateBody(bd);
-      box1->CreateFixture(fd1);
-      box1->CreateFixture(fd2);
-      box1->CreateFixture(fd3);
-      box1->CreateFixture(fd4);
+      b2Body* valveRod = m_world->CreateBody(bd);
+      valveRod->CreateFixture(fd1);
+      valveRod->CreateFixture(fd2);
+      valveRod->CreateFixture(fd3);
+      valveRod->CreateFixture(fd4);
 }
 
 {
-	  int num_balls=1;
+	  int num_balls=100;
 	  for (int i = 0; i < num_balls; i++) {
       float angle = (i / (float)num_balls) * 2 *3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
 	  
 	  b2Vec2 center = b2Vec2(xpos+0,ypos+8*scale);
-	  int blastPower=100;
+	  int blastPower=10;
       b2BodyDef bd;
       bd.type = b2_dynamicBody;
-      bd.fixedRotation = true; // rotation not necessary
-      bd.bullet = true; // prevent tunneling at high speed
-      bd.linearDamping = 0; // drag due to moving through air
-      bd.gravityScale = 0; // ignore gravity
-      bd.position = center; // start at blast center
+      bd.fixedRotation = true; 
+      bd.bullet = true; 
+      bd.linearDamping = 0; 
+      bd.gravityScale = 0;
+      bd.position = center; 
       bd.linearVelocity = blastPower * rayDir;
-      b2Body* body = m_world->CreateBody( &bd );
+      b2Body* particle = m_world->CreateBody( &bd );
   
       b2CircleShape circleShape;
-      circleShape.m_radius = 0.05; // very small
+      circleShape.m_radius = 0.1; // very small
   
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 60 / (float)num_balls; // very high - shared across all particles
-      fd.friction = 0; // friction not necessary
-      fd.restitution = 1.f; // high restitution to reflect off obstacles
-      fd.filter.groupIndex = -1; // particles should not collide with each other
-      fd.filter.categoryBits = 1;
-      fd.filter.maskBits = 2;
-      body->CreateFixture( &fd );
+      fd.density = 60 ; 
+      fd.friction = 0; 
+      fd.restitution = 1.f;
+      fd.filter.groupIndex=-1; 
+      fd.filter.categoryBits = 0x0001; 
+      particle->CreateFixture( &fd );
   }	
 }
 }
