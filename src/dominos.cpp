@@ -39,7 +39,7 @@
 
 #define DEGTORAD 0.0174532925199432957f
 #define RADTODEG 57.295779513082320876f
-
+#define PI 3.14159
  namespace cs296
  {
 
@@ -58,7 +58,11 @@
 	 		shape.Set(b2Vec2(-90.0f, 0.0f), b2Vec2(90.0f, 0.0f));
 	 		b2BodyDef bd; 
 	 		b1 = m_world->CreateBody(&bd); 
-	 		b1->CreateFixture(&shape, 0.0f);
+	 		// b1->CreateFixture(&shape, 0.0f);
+	 		b2FixtureDef groundFixture;
+	 		groundFixture.shape = &shape;
+	 		groundFixture.friction = 0;
+	 		b1->CreateFixture(&groundFixture);
 	 	}
 
 		//=========================================================================================================================
@@ -96,8 +100,9 @@
 	 		float rodLength = 7, outerRadius = 1.2, innerRadius = 0.7;
 
 	 		b2BodyDef myBodyDef;
-			myBodyDef.type = b2_kinematicBody; //this will be a dynamic body
-			myBodyDef.position.Set(0, 20); //set the starting position
+	 		myBodyDef.gravityScale = 0;
+			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
+			myBodyDef.position.Set(0, 6); //set the starting position
 			myBodyDef.angle = 0; //set the starting angle
 			b2Body* rod = m_world->CreateBody(&myBodyDef);
 
@@ -109,6 +114,7 @@
 			boxFixtureDef.density = 200.0;
 			boxFixtureDef.friction = 100.0;
 			rod->CreateFixture(&boxFixtureDef);
+
 
 			b2CircleShape circle;
 			circle.m_radius = outerRadius;
@@ -127,13 +133,120 @@
 			circle.m_radius = outerRadius;
 			rod->CreateFixture(&circle_fix);
 
-			// rod->SetLinearVelocity(b2Vec2(5, 5));
-			//myBodyDef.position
+			rod->SetLinearVelocity(b2Vec2(10, 0));
+			rod->SetAngularVelocity(2);
+			b2BodyDef myBodyDef2;
+			// myBodyDef2.position.Set(-20, 10);
+			// myBodyDef2.angle = 2*PI/3;
+			myBodyDef2.type = b2_dynamicBody;
+			b2Body* rod2 = m_world->CreateBody(&myBodyDef2);
+			rod2->CreateFixture(&boxFixtureDef);
+
+			rod2->CreateFixture(&circle_fix);
+			circle.m_radius = innerRadius;
+			rod2->CreateFixture(&circle_fix);
+			circle.m_p.Set(-rodLength, 0);
+			rod2->CreateFixture(&circle_fix);
+			circle.m_radius = outerRadius;
+			rod2->CreateFixture(&circle_fix);
+			rod2->SetTransform( rod->GetPosition()-b2Vec2(2*rodLength,0), rod->GetAngle());
 
 			b2RevoluteJointDef jointDef;
 			jointDef.bodyA = rod;
-			b2RevoluteJoint* joint = (b2xxxJoint*)world->CreateJoint( &jointDef );
+			jointDef.bodyB = rod2;
+			jointDef.collideConnected = false;
+			jointDef.referenceAngle = PI/3;
 
+			jointDef.localAnchorA.Set(-rodLength,0);
+			jointDef.localAnchorB.Set(-rodLength,0);
+			jointDef.enableMotor = true;
+			jointDef.maxMotorTorque = 20;
+			jointDef.motorSpeed = 30 * DEGTORAD;
+			b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint( &jointDef );
+
+
+			b2Body* wheel1;
+			b2BodyDef wheelBodyDef;
+			wheelBodyDef.type = b2_dynamicBody;
+			b2FixtureDef wheelFixtureDef;
+			wheelFixtureDef.density = 5;
+
+			b2CircleShape wheelShape;
+			wheelShape.m_p.Set(-0, 0);
+			wheelShape.m_radius = 6;
+			wheelFixtureDef.shape = &wheelShape;
+			wheelFixtureDef.friction = 100;
+			wheel1 = m_world->CreateBody(&wheelBodyDef);
+			wheel1->CreateFixture(&wheelFixtureDef);
+			wheel1->SetAngularVelocity(-20);
+			wheel1->SetLinearVelocity(b2Vec2(100, 0));
+
+			jointDef.bodyA = rod2;
+			jointDef.bodyB = wheel1;
+			jointDef.localAnchorA.Set(rodLength, 0);
+			jointDef.localAnchorB = wheel1->GetPosition()+b2Vec2(0, 3);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+
+		}
+
+		
+
+		{
+			b2Body* m_bodyA, *m_bodyB;
+			b2RevoluteJoint *m_joint;
+			//body and fixture defs - the common parts
+			b2BodyDef bodyDef;
+			bodyDef.type = b2_dynamicBody;
+			b2FixtureDef fixtureDef;
+			fixtureDef.density = 1;
+
+  //two shapes
+			b2PolygonShape boxShape;
+			boxShape.SetAsBox(2,2);
+			b2CircleShape circleShape;
+			circleShape.m_radius = 2;     
+
+  //make box a little to the left
+			bodyDef.position.Set(-3, 10);
+			fixtureDef.shape = &boxShape;
+			m_bodyA = m_world->CreateBody( &bodyDef );
+			m_bodyA->CreateFixture( &fixtureDef );
+
+  //and circle a little to the right
+			bodyDef.position.Set( 3, 10);
+			fixtureDef.shape = &circleShape;
+			m_bodyB = m_world->CreateBody( &bodyDef );
+			m_bodyB->CreateFixture( &fixtureDef );
+
+			b2RevoluteJointDef revoluteJointDef;
+			revoluteJointDef.bodyA = m_bodyA;
+			revoluteJointDef.bodyB = m_bodyB;
+			revoluteJointDef.collideConnected = false;
+			revoluteJointDef.localAnchorA.Set(2,2);
+  //the top right corner of the box
+			revoluteJointDef.localAnchorB.Set(0,0);
+  //center of the circle
+			m_joint = (b2RevoluteJoint*)m_world->CreateJoint( &revoluteJointDef );
+
+			// b2DebugDraw* m_debugDraw;
+			// m_debugDraw.DrawString(5, m_textLine, "Current joint angle: %f deg", m_joint->GetJointAngle() * RADTODEG);
+			// m_textLine += 15;
+			// m_debugDraw.DrawString(5, m_textLine, "Current joint speed: %f deg/s", m_joint->GetJointSpeed() * RADTODEG);
+			// m_textLine += 15;
+
+			//place the bodyB anchor at the edge of the circle 
+			revoluteJointDef.localAnchorB.Set(-2,0);
+
+  //place the bodyA anchor outside the fixture
+			revoluteJointDef.localAnchorA.Set(4,4);
+
+			revoluteJointDef.enableLimit = true;
+			revoluteJointDef.lowerAngle = -45 * DEGTORAD;
+			revoluteJointDef.upperAngle =  45 * DEGTORAD;
+
+			revoluteJointDef.enableMotor = true;
+			revoluteJointDef.maxMotorTorque = 5;
+			revoluteJointDef.motorSpeed = 90 * DEGTORAD;
 		}
 
 
