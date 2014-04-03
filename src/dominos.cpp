@@ -61,7 +61,7 @@
 	 		// b1->CreateFixture(&shape, 0.0f);
 	 		b2FixtureDef groundFixture;
 	 		groundFixture.shape = &shape;
-	 		groundFixture.friction = 0.0;
+	 		groundFixture.friction = 100.0;
 	 		b1->CreateFixture(&groundFixture);
 	 	}
 
@@ -70,126 +70,31 @@
 
 	 	}	
 
-
-
-
-	 // 	{
-	 // 		float rodLength = 7, outerRadius = 1.2, innerRadius = 0.7;
-
-	 // 		b2BodyDef myBodyDef;
-	 // 		myBodyDef.gravityScale = 0;
-		// 	myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
-		// 	myBodyDef.position.Set(0, 6); //set the starting position
-		// 	myBodyDef.angle = 0; //set the starting angle
-		// 	b2Body* rod = m_world->CreateBody(&myBodyDef);
-
-		// 	b2PolygonShape boxShape;
-		// 	boxShape.SetAsBox(rodLength,0.5);
-
-		// 	b2FixtureDef boxFixtureDef;
-		// 	boxFixtureDef.shape = &boxShape;
-		// 	boxFixtureDef.density = 200.0;
-		// 	boxFixtureDef.friction = 100.0;
-		// 	rod->CreateFixture(&boxFixtureDef);
-
-
-		// 	b2CircleShape circle;
-		// 	circle.m_radius = outerRadius;
-		// 	circle.m_p.Set(-rodLength, 0);
-		// 	b2FixtureDef circle_fix;
-		// 	circle_fix.shape = &circle;
-		// 	circle_fix.density = 200.0;
-		// 	circle_fix.friction = 100.0;
-
-		// 	rod->CreateFixture(&circle_fix);
-		// 	circle.m_radius = innerRadius;
-		// 	rod->CreateFixture(&circle_fix);
-
-		// 	circle.m_p.Set(rodLength, 0);
-		// 	rod->CreateFixture(&circle_fix);
-		// 	circle.m_radius = outerRadius;
-		// 	rod->CreateFixture(&circle_fix);
-
-		// 	rod->SetLinearVelocity(b2Vec2(10, 0));
-		// 	rod->SetAngularVelocity(2);
-		// 	b2BodyDef myBodyDef2;
-		// 	// myBodyDef2.position.Set(-20, 10);
-		// 	// myBodyDef2.angle = 2*PI/3;
-		// 	myBodyDef2.type = b2_dynamicBody;
-		// 	b2Body* rod2 = m_world->CreateBody(&myBodyDef2);
-		// 	rod2->CreateFixture(&boxFixtureDef);
-
-		// 	rod2->CreateFixture(&circle_fix);
-		// 	circle.m_radius = innerRadius;
-		// 	rod2->CreateFixture(&circle_fix);
-		// 	circle.m_p.Set(-rodLength, 0);
-		// 	rod2->CreateFixture(&circle_fix);
-		// 	circle.m_radius = outerRadius;
-		// 	rod2->CreateFixture(&circle_fix);
-		// 	rod2->SetTransform( rod->GetPosition()-b2Vec2(2*rodLength,0), rod->GetAngle());
-
-		// 	b2RevoluteJointDef jointDef;
-		// 	jointDef.bodyA = rod;
-		// 	jointDef.bodyB = rod2;
-		// 	jointDef.collideConnected = false;
-		// 	jointDef.referenceAngle = PI/3;
-
-		// 	jointDef.localAnchorA.Set(-rodLength,0);
-		// 	jointDef.localAnchorB.Set(-rodLength,0);
-		// 	jointDef.enableMotor = true;
-		// 	jointDef.maxMotorTorque = 20;
-		// 	jointDef.motorSpeed = 30 * DEGTORAD;
-		// 	b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint( &jointDef );
-
-
-		// 	b2Body* wheel1;
-		// 	b2BodyDef wheelBodyDef;
-		// 	wheelBodyDef.type = b2_dynamicBody;
-		// 	b2FixtureDef wheelFixtureDef;
-		// 	wheelFixtureDef.density = 5;
-
-		// 	b2CircleShape wheelShape;
-		// 	wheelShape.m_p.Set(-0, 0);
-		// 	wheelShape.m_radius = 6;
-		// 	wheelFixtureDef.shape = &wheelShape;
-		// 	wheelFixtureDef.friction = 100;
-		// 	wheel1 = m_world->CreateBody(&wheelBodyDef);
-		// 	wheel1->CreateFixture(&wheelFixtureDef);
-		// 	wheel1->SetAngularVelocity(-20);
-		// 	wheel1->SetLinearVelocity(b2Vec2(100, 0));
-
-		// 	jointDef.bodyA = rod2;
-		// 	jointDef.bodyB = wheel1;
-		// 	jointDef.localAnchorA.Set(rodLength, 0);
-		// 	jointDef.localAnchorB = wheel1->GetPosition()+b2Vec2(0, 3);
-		// 	b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
-
-		// }
 	 	float wheelRadius = 6, wheel2x = -20;
 	 	float srLength = 1.5, srOuterRadius = 0.8, srInnerRadius = 0.5, srThickness = 0.5;
-		b2Body* wheel2;
-		{
-			b2BodyDef wheelBodyDef;
-			wheelBodyDef.type = b2_dynamicBody;
-			wheelBodyDef.position.Set(wheel2x, wheelRadius);
-			b2FixtureDef wheelFixtureDef;
-			wheelFixtureDef.density = 5;
+	 	b2Body* wheel2;
+	 	{
+	 		b2BodyDef wheelBodyDef;
+	 		wheelBodyDef.type = b2_dynamicBody;
+	 		wheelBodyDef.position.Set(wheel2x, wheelRadius);
+	 		b2FixtureDef wheelFixtureDef;
+	 		wheelFixtureDef.density = 5;
 
-			b2CircleShape wheelShape;
-			wheelShape.m_radius = wheelRadius;
-			wheelFixtureDef.shape = &wheelShape;
-			wheelFixtureDef.friction = 100;
-			wheelFixtureDef.filter.groupIndex = -1;
+	 		b2CircleShape wheelShape;
+	 		wheelShape.m_radius = wheelRadius;
+	 		wheelFixtureDef.shape = &wheelShape;
+	 		wheelFixtureDef.friction = 100;
+	 		wheelFixtureDef.filter.groupIndex = -1;
 
-			wheel2 = m_world->CreateBody(&wheelBodyDef);
-			wheel2->CreateFixture(&wheelFixtureDef);
+	 		wheel2 = m_world->CreateBody(&wheelBodyDef);
+	 		wheel2->CreateFixture(&wheelFixtureDef);
 			// wheel2->SetAngularVelocity(-20);	
 			// wheel2->SetLinearVelocity(b2Vec2(100, 0));
-		}
-		
-		b2Body* smallRod2;
-		{
-			float rodLength = srLength, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
+	 	}
+
+	 	b2Body* smallRod2;
+	 	{
+	 		float rodLength = srLength, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
 
 	 		b2BodyDef myBodyDef;
 			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
@@ -201,7 +106,7 @@
 			b2FixtureDef boxFixtureDef;
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
-			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.friction = 0;
 			boxFixtureDef.filter.groupIndex = -1;
 			smallRod2->CreateFixture(&boxFixtureDef);
 
@@ -212,7 +117,7 @@
 			b2FixtureDef circle_fix;
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
-			circle_fix.friction = 100.0;
+			circle_fix.friction = 0;
 			circle_fix.filter.groupIndex = -1;
 
 			smallRod2->CreateFixture(&circle_fix);
@@ -265,7 +170,7 @@
 		{
 			float rodLength = srLength, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
 
-	 		b2BodyDef myBodyDef;
+			b2BodyDef myBodyDef;
 			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
 			smallRod3 = m_world->CreateBody(&myBodyDef);
 
@@ -275,7 +180,7 @@
 			b2FixtureDef boxFixtureDef;
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
-			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.friction = 0;
 			boxFixtureDef.filter.groupIndex = -1;
 			smallRod3->CreateFixture(&boxFixtureDef);
 
@@ -286,7 +191,7 @@
 			b2FixtureDef circle_fix;
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
-			circle_fix.friction = 100.0;
+			circle_fix.friction = 0;
 			circle_fix.filter.groupIndex = -1;
 
 			smallRod3->CreateFixture(&circle_fix);
@@ -340,7 +245,7 @@
 		{
 			float rodLength = srLength, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
 
-	 		b2BodyDef myBodyDef;
+			b2BodyDef myBodyDef;
 			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
 			smallRod4 = m_world->CreateBody(&myBodyDef);
 
@@ -350,7 +255,7 @@
 			b2FixtureDef boxFixtureDef;
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
-			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.friction = 0;
 			boxFixtureDef.filter.groupIndex = -1;
 			smallRod4->CreateFixture(&boxFixtureDef);
 
@@ -361,7 +266,7 @@
 			b2FixtureDef circle_fix;
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
-			circle_fix.friction = 100.0;
+			circle_fix.friction = 0;
 			circle_fix.filter.groupIndex = -1;
 
 			smallRod4->CreateFixture(&circle_fix);
@@ -396,7 +301,7 @@
 		{
 			float rodLength = lrLength, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
 
-	 		b2BodyDef myBodyDef;
+			b2BodyDef myBodyDef;
 			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
 			myBodyDef.position.Set(0, 30);
 			longRod1 = m_world->CreateBody(&myBodyDef);
@@ -407,7 +312,7 @@
 			b2FixtureDef boxFixtureDef;
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
-			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.friction = 0;
 			boxFixtureDef.filter.groupIndex = -1;
 			longRod1->CreateFixture(&boxFixtureDef);
 
@@ -418,7 +323,7 @@
 			b2FixtureDef circle_fix;
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
-			circle_fix.friction = 100.0;
+			circle_fix.friction = 0;
 			circle_fix.filter.groupIndex = -1;
 
 			longRod1->CreateFixture(&circle_fix);
@@ -469,9 +374,9 @@
 		{
 			float rodLength = grLength, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
 
-	 		b2BodyDef myBodyDef;
+			b2BodyDef myBodyDef;
 			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
-			myBodyDef.position.Set(0, 30);
+			myBodyDef.position.Set(grLength + srLength, wheelRadius);
 			grayRod = m_world->CreateBody(&myBodyDef);
 
 			b2PolygonShape boxShape;
@@ -480,7 +385,7 @@
 			b2FixtureDef boxFixtureDef;
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
-			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.friction = 0;
 			boxFixtureDef.filter.groupIndex = -1;
 			grayRod->CreateFixture(&boxFixtureDef);
 
@@ -491,7 +396,7 @@
 			b2FixtureDef circle_fix;
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
-			circle_fix.friction = 100.0;
+			circle_fix.friction = 0;
 			circle_fix.filter.groupIndex = -1;
 
 			grayRod->CreateFixture(&circle_fix);
@@ -524,9 +429,9 @@
 		{
 			float rodLength = pr1Length, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
 
-	 		b2BodyDef myBodyDef;
+			b2BodyDef myBodyDef;
 			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
-			myBodyDef.position.Set(0, 30);
+			myBodyDef.position.Set(0, wheelRadius);
 			pinkRod1 = m_world->CreateBody(&myBodyDef);
 
 			b2PolygonShape boxShape;
@@ -535,7 +440,7 @@
 			b2FixtureDef boxFixtureDef;
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
-			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.friction = 0;
 			boxFixtureDef.filter.groupIndex = -1;
 			pinkRod1->CreateFixture(&boxFixtureDef);
 
@@ -546,7 +451,7 @@
 			b2FixtureDef circle_fix;
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
-			circle_fix.friction = 100.0;
+			circle_fix.friction = 0;
 			circle_fix.filter.groupIndex = -1;
 
 			pinkRod1->CreateFixture(&circle_fix);
@@ -579,9 +484,9 @@
 		{
 			float rodLength = pr2Length, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
 
-	 		b2BodyDef myBodyDef;
+			b2BodyDef myBodyDef;
 			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
-			myBodyDef.position.Set(0, 30);
+			myBodyDef.position.Set(0, wheelRadius);
 			pinkRod2 = m_world->CreateBody(&myBodyDef);
 
 			b2PolygonShape boxShape;
@@ -590,7 +495,7 @@
 			b2FixtureDef boxFixtureDef;
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
-			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.friction = 0;
 			boxFixtureDef.filter.groupIndex = -1;
 			pinkRod2->CreateFixture(&boxFixtureDef);
 
@@ -601,7 +506,7 @@
 			b2FixtureDef circle_fix;
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
-			circle_fix.friction = 100.0;
+			circle_fix.friction = 0;
 			circle_fix.filter.groupIndex = -1;
 
 			pinkRod2->CreateFixture(&circle_fix);
@@ -626,6 +531,59 @@
 			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
 		}
 
+
+
+		b2Body* trainBox;
+		float trainHeight = 15, trainWidth = 30;
+		{
+			
+			b2BodyDef myBodyDef;
+			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
+			myBodyDef.position.Set(0, trainHeight + wheelRadius*0.6);
+			trainBox = m_world->CreateBody(&myBodyDef);
+			trainBox->SetGravityScale(0);
+			trainBox->SetLinearVelocity(b2Vec2(5,0));
+
+			b2PolygonShape boxShape;
+			boxShape.SetAsBox(trainWidth, trainHeight);
+
+			b2FixtureDef boxFixtureDef;
+			boxFixtureDef.shape = &boxShape;
+			boxFixtureDef.density = 200.0;
+			boxFixtureDef.friction = 0;
+			boxFixtureDef.filter.groupIndex = -1;
+			trainBox->CreateFixture(&boxFixtureDef);
+		}
+
+		{
+			b2RevoluteJointDef jointDef5;
+			jointDef5.bodyA = wheel2;
+			jointDef5.bodyB = trainBox;
+			jointDef5.collideConnected = false;
+			jointDef5.localAnchorA = b2Vec2(0,0);
+			jointDef5.localAnchorB = b2Vec2(wheel2x-wheel3x, -trainHeight+0.4*wheelRadius);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+		}
+		{
+			b2RevoluteJointDef jointDef5;
+			jointDef5.bodyA = wheel3;
+			jointDef5.bodyB = trainBox;
+			jointDef5.collideConnected = false;
+			jointDef5.localAnchorA = b2Vec2(0,0);
+			jointDef5.localAnchorB = b2Vec2(0, -trainHeight+0.4*wheelRadius);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+		}
+
+		{
+			b2RevoluteJointDef jointDef5;
+			jointDef5.bodyA = wheel4;
+			jointDef5.bodyB = trainBox;
+			jointDef5.collideConnected = false;
+			jointDef5.localAnchorA = b2Vec2(0,0);
+			jointDef5.localAnchorB = b2Vec2(wheel4x-wheel3x, -trainHeight+0.4*wheelRadius);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+		}
+		
 	}
 
 	sim_t *sim = new sim_t("Dominos", dominos_t::create);
