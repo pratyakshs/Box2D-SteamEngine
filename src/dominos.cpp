@@ -179,6 +179,7 @@
 			wheelShape.m_radius = wheelRadius;
 			wheelFixtureDef.shape = &wheelShape;
 			wheelFixtureDef.friction = 100;
+			wheelFixtureDef.filter.groupIndex = -1;
 
 			wheel2 = m_world->CreateBody(&wheelBodyDef);
 			wheel2->CreateFixture(&wheelFixtureDef);
@@ -201,6 +202,7 @@
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
 			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.filter.groupIndex = -1;
 			smallRod2->CreateFixture(&boxFixtureDef);
 
 
@@ -211,6 +213,7 @@
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
 			circle_fix.friction = 100.0;
+			circle_fix.filter.groupIndex = -1;
 
 			smallRod2->CreateFixture(&circle_fix);
 			circle.m_radius = innerRadius;
@@ -250,6 +253,7 @@
 			wheelShape.m_radius = wheelRadius;
 			wheelFixtureDef.shape = &wheelShape;
 			wheelFixtureDef.friction = 100;
+			wheelFixtureDef.filter.groupIndex = -1;
 
 			wheel3 = m_world->CreateBody(&wheelBodyDef);
 			wheel3->CreateFixture(&wheelFixtureDef);
@@ -272,6 +276,7 @@
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
 			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.filter.groupIndex = -1;
 			smallRod3->CreateFixture(&boxFixtureDef);
 
 
@@ -282,6 +287,7 @@
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
 			circle_fix.friction = 100.0;
+			circle_fix.filter.groupIndex = -1;
 
 			smallRod3->CreateFixture(&circle_fix);
 			circle.m_radius = innerRadius;
@@ -322,11 +328,12 @@
 			wheelShape.m_radius = wheelRadius;
 			wheelFixtureDef.shape = &wheelShape;
 			wheelFixtureDef.friction = 100;
+			wheelFixtureDef.filter.groupIndex = -1;
 
 			wheel4 = m_world->CreateBody(&wheelBodyDef);
 			wheel4->CreateFixture(&wheelFixtureDef);
 			// wheel4->SetAngularVelocity(-20);	
-			// wheel4->SetLinearVelocity(b2Vec2(100, 0));
+			// wheel4->SetLinearVelocity(b2Vec2(20, 0));
 		}
 		
 		b2Body* smallRod4;
@@ -344,6 +351,7 @@
 			boxFixtureDef.shape = &boxShape;
 			boxFixtureDef.density = 200.0;
 			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.filter.groupIndex = -1;
 			smallRod4->CreateFixture(&boxFixtureDef);
 
 
@@ -354,6 +362,7 @@
 			circle_fix.shape = &circle;
 			circle_fix.density = 5.0;
 			circle_fix.friction = 100.0;
+			circle_fix.filter.groupIndex = -1;
 
 			smallRod4->CreateFixture(&circle_fix);
 			circle.m_radius = innerRadius;
@@ -378,6 +387,244 @@
 			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef4);
 		}
 
+
+
+
+
+		float lrLength = (wheel4x - wheel2x)/2;
+		b2Body* longRod1;
+		{
+			float rodLength = lrLength, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
+
+	 		b2BodyDef myBodyDef;
+			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
+			myBodyDef.position.Set(0, 30);
+			longRod1 = m_world->CreateBody(&myBodyDef);
+
+			b2PolygonShape boxShape;
+			boxShape.SetAsBox(rodLength, srThickness);
+
+			b2FixtureDef boxFixtureDef;
+			boxFixtureDef.shape = &boxShape;
+			boxFixtureDef.density = 200.0;
+			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.filter.groupIndex = -1;
+			longRod1->CreateFixture(&boxFixtureDef);
+
+
+			b2CircleShape circle;
+			circle.m_radius = outerRadius;
+			circle.m_p.Set(-rodLength, 0);
+			b2FixtureDef circle_fix;
+			circle_fix.shape = &circle;
+			circle_fix.density = 5.0;
+			circle_fix.friction = 100.0;
+			circle_fix.filter.groupIndex = -1;
+
+			longRod1->CreateFixture(&circle_fix);
+			circle.m_radius = innerRadius;
+			longRod1->CreateFixture(&circle_fix);
+
+			circle.m_p.Set(rodLength, 0);
+			longRod1->CreateFixture(&circle_fix);
+			circle.m_radius = outerRadius;
+			longRod1->CreateFixture(&circle_fix);
+
+			longRod1->SetTransform(smallRod3->GetPosition() + b2Vec2(srLength, 0), 0);
+		}
+
+		{
+			b2RevoluteJointDef jointDef5;
+			jointDef5.bodyA = smallRod2;
+			jointDef5.bodyB = longRod1;
+			jointDef5.collideConnected = false;
+			jointDef5.localAnchorA = b2Vec2(srLength,0);
+			jointDef5.localAnchorB = b2Vec2(-lrLength, 0);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+		}
+
+		{
+			b2RevoluteJointDef jointDef5;
+			jointDef5.bodyA = smallRod3;
+			jointDef5.bodyB = longRod1;
+			jointDef5.collideConnected = false;
+			jointDef5.localAnchorA = b2Vec2(srLength,0);
+			jointDef5.localAnchorB = b2Vec2(0, 0);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+		}
+
+		{
+			b2RevoluteJointDef jointDef5;
+			jointDef5.bodyA = smallRod4;
+			jointDef5.bodyB = longRod1;
+			jointDef5.collideConnected = false;
+			jointDef5.localAnchorA = b2Vec2(srLength,0);
+			jointDef5.localAnchorB = b2Vec2(lrLength, 0);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+		}
+
+
+		float grLength = (wheel4x - wheel2x)*0.8/2;
+		b2Body* grayRod;
+		{
+			float rodLength = grLength, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
+
+	 		b2BodyDef myBodyDef;
+			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
+			myBodyDef.position.Set(0, 30);
+			grayRod = m_world->CreateBody(&myBodyDef);
+
+			b2PolygonShape boxShape;
+			boxShape.SetAsBox(rodLength, srThickness);
+
+			b2FixtureDef boxFixtureDef;
+			boxFixtureDef.shape = &boxShape;
+			boxFixtureDef.density = 200.0;
+			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.filter.groupIndex = -1;
+			grayRod->CreateFixture(&boxFixtureDef);
+
+
+			b2CircleShape circle;
+			circle.m_radius = outerRadius;
+			circle.m_p.Set(-rodLength, 0);
+			b2FixtureDef circle_fix;
+			circle_fix.shape = &circle;
+			circle_fix.density = 5.0;
+			circle_fix.friction = 100.0;
+			circle_fix.filter.groupIndex = -1;
+
+			grayRod->CreateFixture(&circle_fix);
+			circle.m_radius = innerRadius;
+			grayRod->CreateFixture(&circle_fix);
+
+			circle.m_p.Set(rodLength, 0);
+			grayRod->CreateFixture(&circle_fix);
+			circle.m_radius = outerRadius;
+			grayRod->CreateFixture(&circle_fix);
+
+			// grayRod->SetTransform(smallRod3->GetPosition() + b2Vec2(srLength, 0), 0);
+		}
+
+		{
+			b2RevoluteJointDef jointDef5;
+			jointDef5.bodyA = grayRod;
+			jointDef5.bodyB = longRod1;
+			jointDef5.collideConnected = false;
+			jointDef5.localAnchorA = b2Vec2(-grLength,0);
+			jointDef5.localAnchorB = b2Vec2(0, 0);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+		}
+
+
+
+
+		float pr1Length = wheelRadius;
+		b2Body* pinkRod1;
+		{
+			float rodLength = pr1Length, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
+
+	 		b2BodyDef myBodyDef;
+			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
+			myBodyDef.position.Set(0, 30);
+			pinkRod1 = m_world->CreateBody(&myBodyDef);
+
+			b2PolygonShape boxShape;
+			boxShape.SetAsBox(rodLength, srThickness);
+
+			b2FixtureDef boxFixtureDef;
+			boxFixtureDef.shape = &boxShape;
+			boxFixtureDef.density = 200.0;
+			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.filter.groupIndex = -1;
+			pinkRod1->CreateFixture(&boxFixtureDef);
+
+
+			b2CircleShape circle;
+			circle.m_radius = outerRadius;
+			circle.m_p.Set(-rodLength, 0);
+			b2FixtureDef circle_fix;
+			circle_fix.shape = &circle;
+			circle_fix.density = 5.0;
+			circle_fix.friction = 100.0;
+			circle_fix.filter.groupIndex = -1;
+
+			pinkRod1->CreateFixture(&circle_fix);
+			circle.m_radius = innerRadius;
+			pinkRod1->CreateFixture(&circle_fix);
+
+			circle.m_p.Set(rodLength, 0);
+			pinkRod1->CreateFixture(&circle_fix);
+			circle.m_radius = outerRadius;
+			pinkRod1->CreateFixture(&circle_fix);
+
+			// pinkRod1->SetTransform(smallRod3->GetPosition() + b2Vec2(srLength, 0), 0);
+		}
+
+		{
+			b2RevoluteJointDef jointDef5;
+			jointDef5.bodyA = pinkRod1;
+			jointDef5.bodyB = grayRod;
+			jointDef5.collideConnected = false;
+			jointDef5.localAnchorA = b2Vec2(-pr1Length,0);
+			jointDef5.localAnchorB = b2Vec2(-grLength, 0);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+		}
+
+
+
+
+		float pr2Length = grLength*0.9;
+		b2Body* pinkRod2;
+		{
+			float rodLength = pr2Length, outerRadius = srOuterRadius, innerRadius = srInnerRadius;
+
+	 		b2BodyDef myBodyDef;
+			myBodyDef.type = b2_dynamicBody; //this will be a dynamic body
+			myBodyDef.position.Set(0, 30);
+			pinkRod2 = m_world->CreateBody(&myBodyDef);
+
+			b2PolygonShape boxShape;
+			boxShape.SetAsBox(rodLength, srThickness);
+
+			b2FixtureDef boxFixtureDef;
+			boxFixtureDef.shape = &boxShape;
+			boxFixtureDef.density = 200.0;
+			boxFixtureDef.friction = 100.0;
+			boxFixtureDef.filter.groupIndex = -1;
+			pinkRod2->CreateFixture(&boxFixtureDef);
+
+
+			b2CircleShape circle;
+			circle.m_radius = outerRadius;
+			circle.m_p.Set(-rodLength, 0);
+			b2FixtureDef circle_fix;
+			circle_fix.shape = &circle;
+			circle_fix.density = 5.0;
+			circle_fix.friction = 100.0;
+			circle_fix.filter.groupIndex = -1;
+
+			pinkRod2->CreateFixture(&circle_fix);
+			circle.m_radius = innerRadius;
+			pinkRod2->CreateFixture(&circle_fix);
+
+			circle.m_p.Set(rodLength, 0);
+			pinkRod2->CreateFixture(&circle_fix);
+			circle.m_radius = outerRadius;
+			pinkRod2->CreateFixture(&circle_fix);
+
+			// pinkRod2->SetTransform(smallRod3->GetPosition() + b2Vec2(srLength, 0), 0);
+		}
+
+		{
+			b2RevoluteJointDef jointDef5;
+			jointDef5.bodyA = pinkRod2;
+			jointDef5.bodyB = pinkRod1;
+			jointDef5.collideConnected = false;
+			jointDef5.localAnchorA = b2Vec2(-pr2Length,0);
+			jointDef5.localAnchorB = b2Vec2(pr1Length, 0);
+			b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+		}
 
 	}
 
