@@ -69,6 +69,153 @@ namespace cs296
       b1 = m_world->CreateBody(&bd); 
       b1->CreateFixture(&shape, 0.0f);
     }
+    
+    
+    		b2Body* engineExt;
+		{
+      //The steam engine scaled and relatively positioned
+      //The (,) denotes the bottom center of engine hull
+			b2Vec2 vertices[18];
+			vertices[17].Set(-4*scale,+0.5*scale);
+			vertices[16].Set(-4*scale,+1.5*scale);
+			vertices[15].Set(-5*scale,+1.5*scale);
+			vertices[14].Set(-5*scale,+0*scale);
+			vertices[13].Set(+5*scale,+0*scale);
+			vertices[12].Set(+5*scale,+5*scale);
+			vertices[11].Set(+4*scale,+5*scale);
+			vertices[10].Set(+4*scale,+7.5*scale);
+			vertices[9].Set(+1*scale,+7.5*scale);
+			vertices[8].Set(+1*scale,+8.5*scale);
+			vertices[7].Set(+0.5*scale,+8.5*scale);
+			vertices[6].Set(+0.5*scale,+7*scale);
+			vertices[5].Set(+3.5*scale,+7*scale);
+			vertices[4].Set(+3.5*scale,+5*scale);
+			vertices[3].Set(+2*scale,+5*scale);
+			vertices[2].Set(+4*scale,+3.5*scale);
+			vertices[1].Set(+4*scale,+0.5*scale);
+			vertices[0].Set(-4*scale,+0.5*scale);
+
+			b2ChainShape chain;
+			chain.CreateChain(vertices, 18);
+	  //chain.CreateLoop(vertices, 8);
+			b2FixtureDef fd1;
+			fd1.shape = &chain;
+			fd1.density = 10.0f;
+			fd1.friction = 0.0f;
+			fd1.restitution = 1.0f;
+
+
+			b2Vec2 v2[10];
+			b2Vec2 v1[9];
+			v2[9].Set(-5*scale,5*scale);
+			v2[8].Set(-5*scale,2*scale);
+			v2[7].Set(-4*scale,2*scale);
+			v2[6].Set(-4*scale,3.5*scale);
+			v2[5].Set(-2*scale,5*scale);
+			v2[4].Set(-3.5*scale,5*scale);
+			v2[3].Set(-3.5*scale,5.39*scale);
+			v2[2].Set(-4*scale,5.39*scale);
+			v2[1].Set(-4*scale,5*scale);
+			v2[0].Set(-5*scale,5*scale);
+			b2ChainShape chain2;
+			chain2.CreateChain(v2, 10);
+			v1[8].Set(-4*scale,7.5*scale);
+			v1[7].Set(-4*scale,5.61*scale);
+			v1[6].Set(-3.5*scale,5.61*scale);
+			v1[5].Set(-3.5*scale,7*scale);
+			v1[4].Set(-0.5*scale,7*scale);
+			v1[3].Set(-0.5*scale,8.5*scale);
+			v1[2].Set(-1*scale,8.5*scale);
+			v1[1].Set(-1*scale,7.5*scale);
+			v1[0].Set(-4*scale,7.5*scale);
+			b2ChainShape chain3;
+			chain3.CreateChain(v1, 9);
+
+			b2Vec2 v4[11];
+			v4[10].Set(-3.25*scale,+3*scale);
+			v4[9].Set(+3.25*scale,+3*scale);
+			v4[8].Set(+1.25*scale,+5*scale);
+			v4[7].Set(+1*scale,+5*scale);
+			v4[6].Set(+1*scale,+4.5*scale);
+			v4[5].Set(+2.25*scale,+3.25*scale);
+			v4[4].Set(-2.25*scale,+3.25*scale);
+			v4[3].Set(-1*scale,+4.5*scale);
+			v4[2].Set(-1*scale,+5*scale);
+			v4[1].Set(-1.25*scale,+5*scale);
+			v4[0].Set(-3.25*scale,+3*scale);
+			b2ChainShape chain4;
+			chain4.CreateChain(v4, 11);
+	  //chain.CreateLoop(vertices, 8);
+			b2FixtureDef exhaust;
+			b2EdgeShape shape; 
+			shape.Set(b2Vec2(-2.25f*scale, 3.5f*scale), b2Vec2(2.25*scale, 3.5f*scale));
+			exhaust.shape=&shape;
+			exhaust.restitution = 0.f;
+			exhaust.friction = 1;
+			exhaust.density = 10.0f;
+			b2FixtureDef enginefd;
+			enginefd.shape = &chain4;
+			enginefd.density = 10.0f;
+			enginefd.friction = 0.0f;
+			enginefd.restitution = 1.0f;
+
+			b2FixtureDef fd3;
+			fd3.shape = &chain2;
+			fd3.density = 10.0f;
+			fd3.friction = 0.0f;
+			fd3.restitution = 1.0f;
+
+
+			b2FixtureDef fd2;
+			fd2.shape = &chain3;
+			fd2.density = 10.0f;
+			fd2.friction = 0.0f;
+			fd2.restitution = 1.0f;
+
+			b2BodyDef engine;
+			engine.position.Set(xpos, ypos);
+			engine.type = b2_dynamicBody;
+
+
+			b2PolygonShape shape4;
+			shape4.SetAsBox(2.0f*scale, 0.08f*scale,b2Vec2(0*scale,8.5*scale),0);
+			b2FixtureDef fd4;
+			fd4.restitution=1.f;
+			fd4.shape=&shape4;
+			
+
+			b2PolygonShape shape5;
+			shape5.SetAsBox(0.25f*scale, 0.1f*scale,b2Vec2(-3.75*scale,5.5*scale),0);
+
+			b2FixtureDef *fd5 = new b2FixtureDef;
+			fd5->shape = new b2PolygonShape;
+			fd5->shape = &shape5;
+			fd5->filter.groupIndex = -2;
+			fd5->filter.maskBits  = 0x0001;
+			fd5->filter.categoryBits  = 0x0002;
+
+            
+            b2PolygonShape shape6;
+			shape6.SetAsBox(0.5f*scale, 0.19f*scale,b2Vec2(-4.5*scale,1.76*scale),0);
+
+			b2FixtureDef *fd6 = new b2FixtureDef;
+			fd6->shape = new b2PolygonShape;
+
+			fd6->shape = &shape6;
+			fd6->filter.groupIndex = -2;
+			fd6->filter.maskBits  = 0x0001;
+			fd6->filter.categoryBits  = 0x0002;
+
+			engineExt = m_world->CreateBody(&engine);
+			engineExt->CreateFixture(&fd1);
+			engineExt->CreateFixture(&fd2);
+			engineExt->CreateFixture(&fd3);
+			engineExt->CreateFixture(&enginefd);
+			engineExt->CreateFixture(&exhaust);
+			engineExt->CreateFixture(&fd4);
+			engineExt->CreateFixture(fd5);
+			engineExt->CreateFixture(fd6);
+		}
     ///The rails
     /*    {
       b2EdgeShape shape; 
@@ -194,12 +341,12 @@ namespace cs296
             b2Body* ext;
             b2BodyDef exhaustbd;
       b2FixtureDef exhaust;
-	  b2EdgeShape shape; 
-      shape.Set(b2Vec2(-2.25f*scale, 3.5f*scale), b2Vec2(2.25*scale, 3.5f*scale));
+	  b2PolygonShape shape; 
+      shape.SetAsBox(2.25*scale,0.2*scale,b2Vec2(0,3.5f*scale),0);
       exhaust.shape=&shape;
       exhaust.restitution = 0.f;
       exhaust.friction = 1;
-      exhaust.density = 10.0f;
+      exhaust.density = 60.0f;
       exhaustbd.type = b2_staticBody;
       exhaustbd.position.Set(xpos, ypos);
       ext = m_world->CreateBody(&exhaustbd);
@@ -286,7 +433,8 @@ namespace cs296
     }
     {
       
-      b2EdgeShape shape1; 
+      b2EdgeShape shape1;
+      //b2Color* col = new b2Color(1,0,0); 
       shape1.Set(b2Vec2(0*scale,3.45*scale),b2Vec2(6*scale,3.45*scale));
 	
       b2BodyDef bd;
@@ -319,7 +467,7 @@ namespace cs296
 	}
 
 ///The valve rod of engine    
-        {
+        /*{
       b2BodyDef *bd = new b2BodyDef;
       bd->type = b2_dynamicBody;
       bd->position.Set(xpos,ypos+5*scale);
@@ -365,7 +513,7 @@ namespace cs296
       valveRod->CreateFixture(fd2);
       valveRod->CreateFixture(fd3);
       valveRod->CreateFixture(fd4);
-}
+}*/
 {
 	  int num_balls=10;
 	  for (int i = 0; i < num_balls; i++) {
@@ -383,13 +531,13 @@ namespace cs296
       bd.position = center; 
       bd.linearVelocity = blastPower * rayDir;
       b2Body* particle = m_world->CreateBody( &bd );
-	  particle->SetUserData( this );
+	  particle->SetUserData(this);
       b2CircleShape circleShape;
-      circleShape.m_radius = 0.1; // very small
+      circleShape.m_radius = 0.5; // very small
   
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 60 ; 
+      fd.density = 100 ; 
       fd.friction = 0; 
       fd.restitution = 0.f;
       fd.filter.groupIndex=-1; 

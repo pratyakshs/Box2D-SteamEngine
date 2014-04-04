@@ -21,7 +21,8 @@
 #include <cstdio>
 #include <stdio.h>    
 #include <stdlib.h>     
-#include <time.h>      
+#include <time.h>
+#include <vector>      
 using namespace std;
 using namespace cs296;
 extern float xpos;
@@ -31,13 +32,18 @@ extern bool accl;
 extern bool stop;
 extern bool checker;
 int counter=0;
+vector <b2Body*> del_list;
+  /*b2Body::~b2Body()
+  {
+    m_body->GetWorld()->DestroyBody( m_body );
+  }*/
   class MyContactListener : public b2ContactListener
   {
   void BeginContact(b2Contact* contact) {
       //check if both fixtures were balls
       void* bodyAUserData = contact->GetFixtureA()->GetBody()->GetUserData();
       void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
-      if (bodyAUserData && bodyBUserData)counter++;
+      if (bodyAUserData && bodyBUserData){counter++;del_list.push_back(contact->GetFixtureA()->GetBody());del_list.push_back(contact->GetFixtureB()->GetBody());}
   }
   
     void EndContact(b2Contact* contact) {
@@ -83,9 +89,7 @@ void base_sim_t::pre_solve(b2Contact* contact, const b2Manifold* oldManifold)
   const b2Manifold* manifold = contact->GetManifold();
 
   b2Fixture* fixtureA = contact->GetFixtureA();
-  b2Fixture* fixtureB = contact->GetFixtureB();
-  if(fixtureA->GetBody()->IsFixedRotation()){checker=true;}
-  else checker=false;  
+  b2Fixture* fixtureB = contact->GetFixtureB();  
   if (manifold->pointCount == 0)
     {
       return;
@@ -148,12 +152,14 @@ void base_sim_t::step(settings_t* settings)
   m_world->SetSubStepping(settings->enable_sub_stepping > 0);
   
   m_point_count = 0;
-  
+ 
+ 
+ 
   m_world->Step(time_step, settings->velocity_iterations, settings->position_iterations);
-  	  if(counter!=0)printf("%d\n", counter);
+  	  //if(counter!=0)printf("%d\n", counter);
   	  int num_balls=counter;
 	  for (int i = 0; i < num_balls; i++) {
-      float angle = 0.1;//(rand() % 361)/360.0 * 2 * 3.1416;
+      float angle = 0.2;//(rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
 	  b2Vec2 center = b2Vec2(xpos+1,ypos+3.5*scale);
 	  int blastPower=10;
@@ -179,6 +185,7 @@ void base_sim_t::step(settings_t* settings)
       fd.filter.categoryBits = 0x0005; 
       fd.filter.maskBits = 0x0004; 
       body->CreateFixture( &fd );
+            //m_world->DestroyBody(body);
   }
 	  
   	  counter=0;
@@ -220,7 +227,14 @@ void base_sim_t::step(settings_t* settings)
   }	
 }
 
-  
+    for (int i=0;i<del_list.size();i++)
+    {
+		//printf("%f\n",del_list[i]->GetMass());	 
+		//b2Vec2 temp = del_list[i]->GetLinearVelocity();
+		//printf("%f\t%f\n",temp.x,temp.y);
+		if(del_list[i]->IsBullet())m_world->DestroyBody(del_list[i]);	
+	}
+	 del_list.clear();  
   
   m_world->DrawDebugData();
   
