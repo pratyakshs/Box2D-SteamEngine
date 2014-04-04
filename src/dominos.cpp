@@ -25,6 +25,7 @@
 
 #include "cs296_base.hpp"
 #include "render.hpp"
+#include <stdio.h>
 
 #ifdef __APPLE__
 	#include <GLUT/glut.h>
@@ -42,6 +43,7 @@ using namespace std;
 	float ypos = 0;///the y-ordinate of engine center. Center refers to bottom center of engine
 	bool accl = false;///This  varible controls the acceleration of steam enngine
 	bool stop = false;///This controls the breaks on engine
+	bool checker =false;
 namespace cs296
 {
   /**  The is the constructor 
@@ -53,7 +55,7 @@ namespace cs296
     /// Edge from (-90.0, 0.0) to (90.0, 0) \n
     /// b2BodyDef bd : ____
     /// b2EdgeShape shape: passed to b1->CreateFixture. Value set to (b2Vec2(-90.0f, 0.0f), b2Vec2(90.0f, 0.0f) \n
-
+	      printf("hi");
 	    b2Body* b1; ///The ground body 
     {
       
@@ -175,8 +177,8 @@ namespace cs296
       b2FixtureDef enginefd;
       enginefd.shape = &chain;
       enginefd.density = 10.0f;
-      enginefd.friction = 1.0f;
-      enginefd.restitution = 0.0f;
+      enginefd.friction = 0.0f;
+      enginefd.restitution = 1.0f;
       b2BodyDef enginebd;
       enginebd.type = b2_staticBody;
       enginebd.position.Set(0.0f, 0.0f);
@@ -221,8 +223,11 @@ namespace cs296
 	
       b2BodyDef bd;
       bd.position.Set(xpos,ypos+ 8.5*scale);
+      b2FixtureDef fd;
+      fd.restitution=1.f;
+      fd.shape=&shape;
       b2Body* ground = m_world->CreateBody(&bd);
-      ground->CreateFixture(&shape, 0.0f);
+      ground->CreateFixture(&fd);
     }
 ///The invisible block needed to block particles from going outside 
 ///the engine hull from valve rod ending   
@@ -315,7 +320,7 @@ namespace cs296
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
 	  
 	  b2Vec2 center = b2Vec2(xpos+0,ypos+8*scale);
-	  int blastPower=10;
+	  int blastPower=100;
       b2BodyDef bd;
       bd.type = b2_dynamicBody;
       bd.fixedRotation = true; 
@@ -333,7 +338,7 @@ namespace cs296
       fd.shape = &circleShape;
       fd.density = 60 ; 
       fd.friction = 0; 
-      fd.restitution = 1.f;
+      fd.restitution = 0.f;
       fd.filter.groupIndex=-1; 
       fd.filter.categoryBits = 0x0001; 
       particle->CreateFixture( &fd );

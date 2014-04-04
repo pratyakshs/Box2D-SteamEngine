@@ -29,6 +29,7 @@ extern float ypos;
 extern float scale;
 extern bool accl;
 extern bool stop;
+extern bool checker;
 base_sim_t::base_sim_t()
 {
 	b2Vec2 gravity;
@@ -60,14 +61,17 @@ base_sim_t::~base_sim_t()
 void base_sim_t::pre_solve(b2Contact* contact, const b2Manifold* oldManifold)
 {
   const b2Manifold* manifold = contact->GetManifold();
-  
+
+  b2Fixture* fixtureA = contact->GetFixtureA();
+  b2Fixture* fixtureB = contact->GetFixtureB();
+  if(fixtureA->GetBody()->IsFixedRotation()){checker=true;}
+  else checker=false;  
   if (manifold->pointCount == 0)
     {
       return;
     }
   
-  b2Fixture* fixtureA = contact->GetFixtureA();
-  b2Fixture* fixtureB = contact->GetFixtureB();
+
   
   b2PointState state1[b2_maxManifoldPoints], state2[b2_maxManifoldPoints];
   b2GetPointStates(state1, state2, oldManifold, manifold);
@@ -132,6 +136,8 @@ void base_sim_t::step(settings_t* settings)
 	  if(accl)numballs=3;
 	  else if(stop)numballs=0;
 	  else numballs=0;
+	  if(checker)accl=true;
+	  else accl=false;
 	    //srand (time(NULL));
 	  for (int i = 0; i < numballs; i++) {
       float angle = (rand() % 361)/360.0 * 2 * 3.1416;
@@ -155,8 +161,8 @@ void base_sim_t::step(settings_t* settings)
       b2FixtureDef fd;
       fd.shape = &circleShape;
       fd.density = 60; // very high - shared across all particles
-      fd.friction = 0; // friction not necessary
-      fd.restitution = 1.f; // high restitution to reflect off obstacles
+      fd.friction = 1; // friction not necessary
+      fd.restitution = 0.f; // high restitution to reflect off obstacles
       fd.filter.groupIndex = -1; // particles should not collide with each other
       fd.filter.categoryBits = 0x0001; 
       body->CreateFixture( &fd );
