@@ -30,12 +30,32 @@ extern float scale;
 extern bool accl;
 extern bool stop;
 extern bool checker;
+int counter=0;
+  class MyContactListener : public b2ContactListener
+  {
+  void BeginContact(b2Contact* contact) {
+      //check if both fixtures were balls
+      void* bodyAUserData = contact->GetFixtureA()->GetBody()->GetUserData();
+      void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
+      if (bodyAUserData && bodyBUserData)counter++;
+  }
+  
+    void EndContact(b2Contact* contact) {
+  
+      //check if fixture A was a ball
+      //void* bodyAUserData = contact->GetFixtureA()->GetBody()->GetUserData();
+      //void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
+      //if (bodyAUserData && bodyBUserData)counter++;
+  
+    }
+  };
+      MyContactListener myContactListenerInstance;
 base_sim_t::base_sim_t()
 {
 	b2Vec2 gravity;
 	gravity.Set(0.0f, -10.0f);
 	m_world = new b2World(gravity);
-
+	m_world->SetContactListener(&myContactListenerInstance);
 	m_text_line = 30;
 
 	m_point_count = 0;
@@ -130,7 +150,38 @@ void base_sim_t::step(settings_t* settings)
   m_point_count = 0;
   
   m_world->Step(time_step, settings->velocity_iterations, settings->position_iterations);
+  	  if(counter!=0)printf("%d\n", counter);
+  	  int num_balls=counter;
+	  for (int i = 0; i < num_balls; i++) {
+      float angle = 0.1;//(rand() % 361)/360.0 * 2 * 3.1416;
+      b2Vec2 rayDir( sinf(angle), cosf(angle) );
+	  b2Vec2 center = b2Vec2(xpos+1,ypos+3.5*scale);
+	  int blastPower=10;
+      b2BodyDef bd;
+      bd.type = b2_dynamicBody;
+      bd.fixedRotation = true; // rotation not necessary
+      bd.bullet = true; // prevent tunneling at high speed
+      bd.linearDamping = 0; // drag due to moving through air
+      bd.gravityScale = 0; // ignore gravity
+      bd.position = center; // start at blast center
+      bd.linearVelocity = blastPower * rayDir;
+      b2Body* body = m_world->CreateBody( &bd );
+	  //body->SetUserData( this );
+      b2CircleShape circleShape;
+      circleShape.m_radius = 0.1; // very small
   
+      b2FixtureDef fd;
+      fd.shape = &circleShape;
+      fd.density = 60; // very high - shared across all particles
+      fd.friction = 0; // friction not necessary
+      fd.restitution = 1.f; // high restitution to reflect off obstacles
+      fd.filter.groupIndex = -2; // particles should not collide with each other
+      fd.filter.categoryBits = 0x0005; 
+      fd.filter.maskBits = 0x0004; 
+      body->CreateFixture( &fd );
+  }
+	  
+  	  counter=0;
   {
 	  int numballs;
 	  if(accl)numballs=3;
@@ -139,10 +190,10 @@ void base_sim_t::step(settings_t* settings)
 	  if(checker)accl=true;
 	  else accl=false;
 	    //srand (time(NULL));
+	    
 	  for (int i = 0; i < numballs; i++) {
       float angle = (rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
-	  
 	  b2Vec2 center = b2Vec2(xpos+0,ypos+8*scale);
 	  int blastPower=100;
       b2BodyDef bd;
@@ -154,20 +205,21 @@ void base_sim_t::step(settings_t* settings)
       bd.position = center; // start at blast center
       bd.linearVelocity = blastPower * rayDir;
       b2Body* body = m_world->CreateBody( &bd );
-  
+	  body->SetUserData( this );
       b2CircleShape circleShape;
       circleShape.m_radius = 0.05; // very small
   
       b2FixtureDef fd;
       fd.shape = &circleShape;
       fd.density = 60; // very high - shared across all particles
-      fd.friction = 1; // friction not necessary
+      fd.friction = 0; // friction not necessary
       fd.restitution = 0.f; // high restitution to reflect off obstacles
       fd.filter.groupIndex = -1; // particles should not collide with each other
       fd.filter.categoryBits = 0x0001; 
       body->CreateFixture( &fd );
   }	
 }
+
   
   
   m_world->DrawDebugData();

@@ -38,17 +38,21 @@ using namespace std;
 
 #include "dominos.hpp"
    
-  	float xpos = 0;///the x-ordinate of engine center. Center refers to bottom center of engine
+  	float xpos = 10;///the x-ordinate of engine center. Center refers to bottom center of engine
 	float scale = 3;///the scale for engine
-	float ypos = 0;///the y-ordinate of engine center. Center refers to bottom center of engine
+	float ypos = 10;///the y-ordinate of engine center. Center refers to bottom center of engine
 	bool accl = false;///This  varible controls the acceleration of steam enngine
 	bool stop = false;///This controls the breaks on engine
 	bool checker =false;
+
+
 namespace cs296
 {
   /**  The is the constructor 
    * This is the documentation block for the constructor.
    */ 
+
+  //in FooTest constructor
   dominos_t::dominos_t()
   {
     /// b2Body* b1: Brief pointer to the static body ground. \n
@@ -65,6 +69,14 @@ namespace cs296
       b1 = m_world->CreateBody(&bd); 
       b1->CreateFixture(&shape, 0.0f);
     }
+    ///The rails
+    /*    {
+      b2EdgeShape shape; 
+      shape.Set(b2Vec2(-90.0f, 0.0f), b2Vec2(90.0f, 0.0f));
+      b2BodyDef bd; 
+      b1 = m_world->CreateBody(&bd); 
+      b1->CreateFixture(&shape, 0.0f);
+    }*/
     ///This part corresponds to exterior part of the engine
     {
       //The steam engine scaled and relatively positioned
@@ -167,13 +179,6 @@ namespace cs296
       b2ChainShape chain;
 	  chain.CreateChain(vertices, 11);
 	  //chain.CreateLoop(vertices, 8);
-	  b2FixtureDef exhaust;
-	  b2EdgeShape shape; 
-      shape.Set(b2Vec2(-2.25f*scale, 3.5f*scale), b2Vec2(2.25*scale, 3.5f*scale));
-      exhaust.shape=&shape;
-      exhaust.restitution = 0.f;
-      exhaust.friction = 1;
-      exhaust.density = 10.0f;
       b2FixtureDef enginefd;
       enginefd.shape = &chain;
       enginefd.density = 10.0f;
@@ -181,11 +186,25 @@ namespace cs296
       enginefd.restitution = 1.0f;
       b2BodyDef enginebd;
       enginebd.type = b2_staticBody;
-      enginebd.position.Set(0.0f, 0.0f);
+            enginebd.position.Set(0.0f, 0.0f);
       engine_int = m_world->CreateBody(&enginebd);
       engine_int->CreateFixture(&enginefd);
-      engine_int->CreateFixture(&exhaust);
-      
+            
+            
+            b2Body* ext;
+            b2BodyDef exhaustbd;
+      b2FixtureDef exhaust;
+	  b2EdgeShape shape; 
+      shape.Set(b2Vec2(-2.25f*scale, 3.5f*scale), b2Vec2(2.25*scale, 3.5f*scale));
+      exhaust.shape=&shape;
+      exhaust.restitution = 0.f;
+      exhaust.friction = 1;
+      exhaust.density = 10.0f;
+      exhaustbd.type = b2_staticBody;
+      exhaustbd.position.Set(xpos, ypos);
+      ext = m_world->CreateBody(&exhaustbd);
+      ext->CreateFixture(&exhaust);
+      ext->SetUserData( this );
 }
 
 ///Piston rod of engine
@@ -243,6 +262,8 @@ namespace cs296
       fd1->filter.groupIndex = -2;
       fd1->filter.maskBits  = 0x0001;
       fd1->filter.categoryBits  = 0x0002;
+      fd1->restitution  = 0;
+      fd1->friction  = 0;
       b2Body* block = m_world->CreateBody(&bd);
       block->CreateFixture(fd1);
       
@@ -263,7 +284,40 @@ namespace cs296
       block->CreateFixture(fd1);
       
     }
-    
+    {
+      
+      b2EdgeShape shape1; 
+      shape1.Set(b2Vec2(0*scale,3.45*scale),b2Vec2(6*scale,3.45*scale));
+	
+      b2BodyDef bd;
+      b2FixtureDef *fd1 = new b2FixtureDef;
+      fd1->shape = new b2EdgeShape;
+      bd.position.Set(xpos ,ypos);
+      fd1->shape = &shape1;
+      fd1->filter.groupIndex = -1;
+      fd1->filter.maskBits  = 0x0005;
+      fd1->filter.categoryBits  = 0x0004;
+      b2Body* block = m_world->CreateBody(&bd);
+      block->CreateFixture(fd1);	
+	}
+
+    {
+      
+      b2EdgeShape shape1; 
+      shape1.Set(b2Vec2(0*scale,3.85*scale),b2Vec2(6*scale,3.85*scale));
+	
+      b2BodyDef bd;
+      b2FixtureDef *fd1 = new b2FixtureDef;
+      fd1->shape = new b2EdgeShape;
+      bd.position.Set(xpos ,ypos);
+      fd1->shape = &shape1;
+      fd1->filter.groupIndex = -1;
+      fd1->filter.maskBits  = 0x0005;
+      fd1->filter.categoryBits  = 0x0004;
+      b2Body* block = m_world->CreateBody(&bd);
+      block->CreateFixture(fd1);	
+	}
+
 ///The valve rod of engine    
         {
       b2BodyDef *bd = new b2BodyDef;
@@ -312,9 +366,8 @@ namespace cs296
       valveRod->CreateFixture(fd3);
       valveRod->CreateFixture(fd4);
 }
-
 {
-	  int num_balls=100;
+	  int num_balls=10;
 	  for (int i = 0; i < num_balls; i++) {
       float angle = (i / (float)num_balls) * 2 *3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
@@ -330,7 +383,7 @@ namespace cs296
       bd.position = center; 
       bd.linearVelocity = blastPower * rayDir;
       b2Body* particle = m_world->CreateBody( &bd );
-  
+	  particle->SetUserData( this );
       b2CircleShape circleShape;
       circleShape.m_radius = 0.1; // very small
   
