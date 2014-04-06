@@ -24,12 +24,12 @@
 #include <time.h>      
 using namespace std;
 using namespace cs296;
-extern float xpos;
+/*extern float xpos;
 extern float ypos;
 extern float scale;
 extern bool accl;
 extern bool stop;
-extern bool checker;
+extern bool checker;*/
 int counter=0;
   class MyContactListener : public b2ContactListener
   {
@@ -37,7 +37,7 @@ int counter=0;
       //check if both fixtures were balls
       void* bodyAUserData = contact->GetFixtureA()->GetBody()->GetUserData();
       void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
-      if (bodyAUserData && bodyBUserData)counter++;
+      if (bodyAUserData && bodyBUserData){counter++;}
   }
   
     void EndContact(b2Contact* contact) {
@@ -83,9 +83,7 @@ void base_sim_t::pre_solve(b2Contact* contact, const b2Manifold* oldManifold)
   const b2Manifold* manifold = contact->GetManifold();
 
   b2Fixture* fixtureA = contact->GetFixtureA();
-  b2Fixture* fixtureB = contact->GetFixtureB();
-  if(fixtureA->GetBody()->IsFixedRotation()){checker=true;}
-  else checker=false;  
+  b2Fixture* fixtureB = contact->GetFixtureB();  
   if (manifold->pointCount == 0)
     {
       return;
@@ -150,7 +148,7 @@ void base_sim_t::step(settings_t* settings)
   m_point_count = 0;
   
   m_world->Step(time_step, settings->velocity_iterations, settings->position_iterations);
-  	  if(counter!=0)printf("%d\n", counter);
+  	 /* if(counter!=0)printf("%d\n", counter);
   	  int num_balls=counter;
 	  for (int i = 0; i < num_balls; i++) {
       float angle = 0.1;//(rand() % 361)/360.0 * 2 * 3.1416;
@@ -218,7 +216,7 @@ void base_sim_t::step(settings_t* settings)
       fd.filter.categoryBits = 0x0001; 
       body->CreateFixture( &fd );
   }	
-}
+}*/
 
   
   

@@ -14,11 +14,11 @@
 #else
 #include "GL/glui.h"
 #endif
-extern float xpos;
+/*extern float xpos;
 extern float ypos;
 extern float scale;
 extern bool accl;
-extern bool stop;
+extern bool stop;*/
 //! The namespace protects the global variables and other names from
 //! clashes in scope. Read about the use of named and unnamed
 //! namespaces in C++ Figure out where all the datatypes used below
@@ -121,7 +121,7 @@ namespace cs296
     case 'p':
       settings.pause = !settings.pause;
       break;
-    case 'w':
+    /*case 'w':
 		stop=false;
 		accl=true;
 		break;
@@ -132,7 +132,7 @@ namespace cs296
 	case 'q':
 		stop=false;
 		accl=false;
-      break;      
+      break;*/      
       //! The default case. Why is this needed?
     default:
       if (test)
