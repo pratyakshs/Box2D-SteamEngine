@@ -22,17 +22,28 @@
 #include <stdio.h>    
 #include <stdlib.h>     
 #include <time.h>
-#include <vector>      
+#include <vector>
+#include <queue>     
 using namespace std;
 using namespace cs296;
 extern float xpos_e;
-extern float ypos_e;
+extern float ypos_e; 
 extern float scale_e;
 extern bool accl;
 extern bool stop;
 extern b2Body* engineBox;
-int counter=0;
+int count1=0;
+int count2=0;
+int time_step_count=0;
+struct smoke{
+    b2Body* mybody;
+    int time_stamp;
+    smoke(){
+    }
+};
+
 vector <b2Body*> del_list;
+queue <smoke*> smoke_list;
   /*b2Body::~b2Body()
   {
     m_body->GetWorld()->DestroyBody( m_body );
@@ -45,8 +56,14 @@ vector <b2Body*> del_list;
       void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
       if (bodyAUserData && bodyBUserData)
         {
-          counter++;del_list.push_back(contact->GetFixtureA()->GetBody());
-          del_list.push_back(contact->GetFixtureB()->GetBody());
+          int a =*((int*)(&bodyAUserData));
+          int b =*((int*)(&bodyBUserData));
+          if(a == 2 || b == 2){count1++;
+            if(a==2) del_list.push_back(contact->GetFixtureA()->GetBody());
+            else del_list.push_back(contact->GetFixtureB()->GetBody());}
+          if(a == 3 || b == 3){count2++;
+            if(a==3) del_list.push_back(contact->GetFixtureA()->GetBody());
+            else del_list.push_back(contact->GetFixtureB()->GetBody());}
         }
   }
   
@@ -161,38 +178,55 @@ void base_sim_t::step(settings_t* settings)
  
   m_world->Step(time_step, settings->velocity_iterations, settings->position_iterations);
   	  //if(counter!=0)printf("%d\n", counter);
-  	  int num_balls=counter;
+  for(int j=0;j<2;j++)
+  {
+  	  int num_balls;
+      float pos;
+      if(j==0){num_balls=count1;pos=15.4;}
+      else {num_balls=count2;pos=20.8;}
 	  for (int i = 0; i < num_balls; i++) {
-      float angle = 0.2;//(rand() % 361)/360.0 * 2 * 3.1416;
+      float angle =0;//(rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
-	  b2Vec2 center = engineBox->GetPosition()+b2Vec2(16*scale_e,-2.8*scale_e);
-	  int blastPower=10;
+	  b2Vec2 center = engineBox->GetPosition()+b2Vec2(pos*scale_e,-2.5*scale_e);
+	  int blastPower=1;
       b2BodyDef bd;
       bd.type = b2_dynamicBody;
       bd.fixedRotation = true; // rotation not necessary
       bd.bullet = true; // prevent tunneling at high speed
       bd.linearDamping = 0; // drag due to moving through air
-      bd.gravityScale = 0; // ignore gravity
+      bd.gravityScale = -2; // ignore gravity
       bd.position = center; // start at blast center
       bd.linearVelocity = blastPower * rayDir;
       b2Body* body = m_world->CreateBody( &bd );
-	  //body->SetUserData( this );
       b2CircleShape circleShape;
-      circleShape.m_radius = 0.2; // very small
-  
+      circleShape.m_radius = 0.05; // very small
+
       b2FixtureDef fd;
-      fd.shape = &circleShape;
-      fd.density = 60; // very high - shared across all particles
+      fd.shape = &circleShape;  
+      fd.density = 1; // very high - shared across all particles
       fd.friction = 0; // friction not necessary
       fd.restitution = 1.f; // high restitution to reflect off obstacles
       fd.filter.groupIndex = -2; // particles should not collide with each other
       fd.filter.categoryBits = 0x0005; 
-      fd.filter.maskBits = 0x0004; 
+      // fd.filter.maskBits = 0x0004; 
       body->CreateFixture( &fd );
+      smoke* part = new smoke();
+      part->time_stamp=time_step_count;
+      part->mybody=body;
+      smoke_list.push(part);
             //m_world->DestroyBody(body);
   }
-	  
-  	  counter=0;
+}
+  	  count1=0;
+      count2=0;
+      time_step_count++;
+    while(!smoke_list.empty()) 
+    {
+      if(smoke_list.front()->time_stamp +200 <= time_step_count){
+        m_world->DestroyBody(smoke_list.front()->mybody);
+        smoke_list.pop();}
+      else break;
+    }
   {
 	  int numballs;
 	  if(accl){numballs=3;accl=false;}
@@ -216,28 +250,27 @@ void base_sim_t::step(settings_t* settings)
       bd.position = center; // start at blast center
       bd.linearVelocity = blastPower * rayDir;
       b2Body* body = m_world->CreateBody( &bd );
-	  body->SetUserData( this );
+      int ballIndex=1;
+	    body->SetUserData((void*)ballIndex);
       b2CircleShape circleShape;
       circleShape.m_radius = 0.05; // very small
   
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 1; // very high - shared across all particles
+      fd.density = 10; // very high - shared across all particles
       fd.friction = 0; // friction not necessary
       fd.restitution = 0.f; // high restitution to reflect off obstacles
       fd.filter.groupIndex = -1; // particles should not collide with each other
-      fd.filter.categoryBits = 0x0001; 
+      fd.filter.categoryBits = 0x0001;
+      fd.filter.maskBits = 0x0003; 
       body->CreateFixture( &fd );
   }	
 }
 
     for (int i=0;i<del_list.size();i++)
     {
-		//printf("%f\n",del_list[i]->GetMass());	 
-		//b2Vec2 temp = del_list[i]->GetLinearVelocity();
-		//printf("%f\t%f\n",temp.x,temp.y);
 		if(del_list[i]->IsBullet())m_world->DestroyBody(del_list[i]);	
-	}
+	  }
 	 del_list.clear();  
   
   m_world->DrawDebugData();

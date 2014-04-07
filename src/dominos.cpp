@@ -370,7 +370,6 @@ b2Body* engineBox;
 	 		fd4->density = 10;
 	 		fd4->friction = 0.0;
 	 		fd4->restitution = 1.f;
-	 		fd4->filter.groupIndex = -2;
 	 		fd4->filter.maskBits = 0x0001; 
 	 		fd4->shape = new b2PolygonShape;
 	 		b2PolygonShape bs4;
@@ -381,7 +380,7 @@ b2Body* engineBox;
 	 		fd5->density = 10;
 	 		fd5->friction = 0.0;
 	 		fd5->restitution = 1.f;
-	 		fd5->filter.groupIndex = -1; 
+	 		fd5->filter.groupIndex = -2; 
 	 		fd5->shape = new b2PolygonShape;
 	 		b2PolygonShape bs5;
 	 		bs5.SetAsBox(0.1*scale_e,1*scale_e, b2Vec2(15.1f*scale_e,-4.f*scale_e), 0);
@@ -518,11 +517,12 @@ b2Body* engineBox;
 	 		fd7->shape=&ext_entry;
 	 		fd7->restitution = 0.f;
 	 		fd7->friction = 1;
-	 		fd7->density = 60.0f;
+	 		fd7->density = 10.0f;
 	 		exhaustbd.type = b2_dynamicBody;
 	 		ext1 = m_world->CreateBody(&exhaustbd);
 	 		ext1->CreateFixture(fd7);
-	 		ext1->SetUserData(this);
+	 		int left=2;	
+	 		ext1->SetUserData((void*)left);
 	 	}
 	 	{
 	 		b2WeldJointDef weldJointDef;
@@ -543,11 +543,12 @@ b2Body* engineBox;
 	 		fd7->shape=&ext_entry;
 	 		fd7->restitution = 0.f;
 	 		fd7->friction = 1;
-	 		fd7->density = 60.0f;
+	 		fd7->density = 10.0f;
 	 		exhaustbd.type = b2_dynamicBody;
 	 		ext2 = m_world->CreateBody(&exhaustbd);
 	 		ext2->CreateFixture(fd7);
-	 		ext2->SetUserData(this);
+	 		int right=3;	
+	 		ext2->SetUserData((void*)right);
 	 	}
 	 	{
 	 		b2WeldJointDef weldJointDef;
