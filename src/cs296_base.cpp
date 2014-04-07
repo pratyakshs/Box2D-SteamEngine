@@ -21,6 +21,7 @@
 using namespace std;
 using namespace cs296;
 
+extern float thetax;
 
 base_sim_t::base_sim_t()
 {
@@ -87,6 +88,7 @@ void base_sim_t::draw_title(int x, int y, const char *string)
 
 void base_sim_t::step(settings_t* settings)
 {
+  printf("%f\n", thetax);
   float32 time_step = settings->hz > 0.0f ? 1.0f / settings->hz : float32(0.0f);
 
   if (settings->pause)
