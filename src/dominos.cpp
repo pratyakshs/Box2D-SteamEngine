@@ -80,17 +80,17 @@
 	 	b2Body* b1;
 	 	float xpos,ypos,scale,xpos_e,ypos_e,scale_e;
 	 	scale_e=2;
-	 	xpos_e=12.6;//(2.1*wheelRadius)
+	 	xpos_e=12.6 - (-3) ;//(2.1*wheelRadius)
 	 	ypos_e=20;
 	 	xpos=xpos_e+18*scale_e;
 	 	ypos=ypos_e-4*scale_e;	
-	 	scale=1.49;
+	 	// scale=1.49;
 	 	float xpos_p=xpos_e+ 18*scale_e;
 	 	float ypos_p=ypos_e-6.7*scale_e;
 	 	{
 
 	 		b2PolygonShape shape; 
-	 		shape.SetAsBox(90, 0.01);
+	 		shape.SetAsBox(180, 0.01);
 	 		b2BodyDef bd; 
 	 		b1 = m_world->CreateBody(&bd); 
 	 		bd.position.Set(0, -0.0000000001);
@@ -124,13 +124,13 @@
 	 		bd.position += b2Vec2(2.1*wheelRadius, 0);
 	 		wheel3 = m_world->CreateBody(&bd);
 	 		wheel3->CreateFixture(&fd);
-	 		wheel3->SetAngularVelocity(10);
-	 		wheel2->SetAngularVelocity(10);
-	 		wheel1->SetAngularVelocity(10);
+	 		wheel3->SetAngularVelocity(15);
+	 		wheel2->SetAngularVelocity(15);
+	 		wheel1->SetAngularVelocity(15);
 	 	}
 
-	 	b2Body *smallRod1, *smallRod2, *smallRod3, *longRod, *dRod, *msRod, *rod1, *rod2, *rod3, *rod4, *rod5, *rod6, *rod7,*valveRod,*engineBox, *ext1,*ext2,*piston;
-	 	float lrLength = (wheel3->GetPosition() - wheel1->GetPosition()).x/2, msrLength, drLength, length1, length2, length3, length4, length5, length6, length7;
+	 	b2Body *smallRod1, *smallRod2, *smallRod3, *longRod, *dRod, *msRod, *rod1, *rod2, *rod3, *rod4, *rod5, *rod6, *rod7, *rod8, *rod9, *rod10, *valveRod,*engineBox, *ext1,*ext2,*piston;
+	 	float lrLength = (wheel3->GetPosition() - wheel1->GetPosition()).x/2, msrLength, drLength, length1, length2, length3, length4, length5, length6, length7, length8, length9, length10;
 	 	{
 	 		float rodLength = 1.25, outerRadius = 0.6, innerRadius = 0.3, srThickness = 0.3;
 
@@ -254,14 +254,66 @@
 
 	 		{
 	 			createRod(rod3, length3, 12.5, 2.5);
+	 			// createRod(rod3, length3, 12.5/2, 2.5/2);
 	 			b2Vec2 pos = rod2->GetPosition() + polar(length2, rod2->GetAngle()) + b2Vec2(10.5, 2) - polar(length3, theta);
 	 			rod3->SetTransform(pos, theta);
 	 			b2RevoluteJointDef jointDef;
 	 			jointDef.Initialize(rod2, rod3, rod2->GetWorldCenter()+polar(length2, rod2->GetAngle()));
 	 			b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 		}
-	 	}
 
+	 		{
+	 			createRod(rod5, length5, 0.8, 5.2);
+	 			b2Vec2 pos = rod3->GetPosition()-polar(length3, rod3->GetAngle())+polar(rodLength, theta);
+	 			rod5->SetTransform(pos, theta);
+	 			b2RevoluteJointDef jointDef;
+	 			jointDef.Initialize(rod3, rod5, rod3->GetWorldCenter()-polar(length3, rod3->GetAngle()));
+	 			b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 		}
+
+	 		{
+	 			createRod(rod7, length7, 0.8, 9.0);
+	 			b2Vec2 pos = rod3->GetPosition()+polar(length3, rod3->GetAngle())-polar(rodLength, theta);
+	 			rod7->SetTransform(pos, theta);
+	 			b2RevoluteJointDef jointDef;
+	 			jointDef.Initialize(rod7, rod3, rod3->GetWorldCenter()+polar(length3, rod3->GetAngle()));
+	 			b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 		}
+
+	 		{
+	 			createRod(rod8, length8, 4, 0.6);
+	 			b2Vec2 pos = rod7->GetPosition()-polar(length7, rod7->GetAngle())-polar(rodLength, theta);
+	 			rod8->SetTransform(pos, theta);
+	 			b2RevoluteJointDef jointDef;
+	 			jointDef.Initialize(rod7, rod8, rod7->GetWorldCenter()-polar(length7, rod7->GetAngle()));
+	 			b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 		}
+
+	 		{
+	 			createRod(rod9, length9, 0.000000001, 3.55);
+	 			b2Vec2 pos = rod8->GetPosition()-polar(length8, rod8->GetAngle())+polar(rodLength, theta);
+	 			rod9->SetTransform(pos, theta);
+	 			b2RevoluteJointDef jointDef;
+	 			jointDef.Initialize(rod9, rod8, rod8->GetWorldCenter()-polar(length8, rod8->GetAngle()));
+	 			b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 		}
+
+	 		{
+	 			createRod(rod10, length10, 0.000000001, 3.6);
+	 			b2Vec2 pos = rod9->GetPosition()+polar(length9, rod9->GetAngle());
+	 			rod10->SetTransform(pos, theta);
+	 			b2RevoluteJointDef jointDef;
+	 			jointDef.Initialize(rod10, rod9, rod9->GetWorldCenter()+polar(length9, rod9->GetAngle()));
+	 			b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 			jointDef.Initialize(rod10, dRod, rod10->GetWorldCenter());
+	 			joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+
+	 			b2PrismaticJointDef jointDef2;
+	 			jointDef2.Initialize(rod10, b1, rod10->GetWorldCenter(), b2Vec2(1,0));
+	 			b2PrismaticJoint* joint2 = (b2PrismaticJoint*)m_world->CreateJoint(&jointDef2);
+	 		}
+	 	}
+////////////////////////////////////////////////////////////////////////////
 	 	{
 	 		float scale_v=1.70;
 	 		b2BodyDef *bd = new b2BodyDef;
@@ -343,7 +395,7 @@
 	 		fd2->restitution = 1.f; 
 	 		fd2->shape = new b2PolygonShape;
 	 		b2PolygonShape bs2;
-	 		bs2.SetAsBox(1.5*scale,0.25*scale, b2Vec2(-1.65*scale,0*scale), 0);
+	 		bs2.SetAsBox(2.855*scale,0.25*scale, b2Vec2(-2.65*scale,0*scale), 0);
 	 		fd2->shape = &bs2;
 	 		fd2->filter.groupIndex = -1;
 	 		// bd->gravityScale=0.f;
@@ -581,10 +633,20 @@ b2Joint *m_joint = (b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
 	weldJointDef.bodyA = engineBox;
 	weldJointDef.bodyB = ext2;
 	weldJointDef.collideConnected = false;
-	 		weldJointDef.localAnchorA.Set(20.8*scale_e,-3.3*scale_e);//xpos_e+15.5*scale_e, ypos_e-3.8*scale_e);
-weldJointDef.localAnchorB.Set(0,0);
-b2Joint *m_joint = (b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
+	weldJointDef.localAnchorA.Set(20.8*scale_e,-3.3*scale_e);
+	 		//xpos_e+15.5*scale_e, ypos_e-3.8*scale_e);
+	weldJointDef.localAnchorB.Set(0,0);
+	b2Joint *m_joint = (b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
 }
+	{	//joint b/w rod4 and enginebox
+		b2RevoluteJointDef jointDef;
+		jointDef.Initialize(rod4, engineBox, rod4->GetWorldCenter() + polar(length4, rod4->GetAngle()));
+		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+
+		//joint b/w rod5 and enginebox
+		jointDef.Initialize(rod5, engineBox, rod5->GetWorldCenter() + polar(length5, rod5->GetAngle()));
+		joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	}
 }
 
 sim_t *sim = new sim_t("Dominos", dominos_t::create);
