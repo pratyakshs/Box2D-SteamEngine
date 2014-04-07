@@ -68,13 +68,13 @@
 	 	b2Body* b1;
 	 	float xpos,ypos,scale,xpos_e,ypos_e,scale_e;
 	 	scale_e=2;
-	 	float xpos_p=70 + 18*scale_e;
-	 	float ypos_p=15-6.7*scale_e;
-	 	xpos=70+18*scale_e;
-	 	ypos=15-4*scale_e;
+	 	xpos_e=12.6;//(2.1*wheelRadius)
+	 	ypos_e=20;
+	 	xpos=xpos_e+18*scale_e;
+	 	ypos=ypos_e-4*scale_e;	
 	 	scale=1.49;
-	 	xpos_e=70;
-	 	ypos_e=15;
+	 	float xpos_p=xpos_e+ 18*scale_e;
+	 	float ypos_p=ypos_e-6.7*scale_e;
 	 	{
 
 	 		b2PolygonShape shape; 
@@ -117,7 +117,7 @@
 	 		wheel1->SetAngularVelocity(10);
 	 	}
 
-	 	b2Body *piston,*smallRod1, *smallRod2, *smallRod3, *longRod, *dRod, *msRod, *rod1, *rod2, *rod3, *rod4, *rod5,*valveRod,*engineBox;
+	 	b2Body *ext1,*ext2,*piston,*smallRod1, *smallRod2, *smallRod3, *longRod, *dRod, *msRod, *rod1, *rod2, *rod3, *rod4, *rod5,*valveRod,*engineBox;
 	 	float lrLength = (wheel3->GetPosition() - wheel1->GetPosition()).x/2, msrLength, drLength, length1, length2, length3;
 	 	{
 	 		float rodLength = 1.25, outerRadius = 0.6, innerRadius = 0.3, srThickness = 0.3;
@@ -232,7 +232,7 @@
 	 	}
 
 	 	{
-	 		float scale_v=1.7;
+	 		float scale_v=1.70;
 	 		b2BodyDef *bd = new b2BodyDef;
 	 		bd->type = b2_dynamicBody;
 	 		bd->position.Set(xpos,ypos);
@@ -272,7 +272,7 @@
 	 		b2PolygonShape bs4;
 	 		bs4.SetAsBox(2*scale_v,0.2*scale_v, b2Vec2(-4.f*scale_v,0.f*scale_v), 0);
 	 		fd4->shape = &bs4;
-	 		bd->gravityScale=0;
+	 		// bd->gravityScale=0;
 	 		valveRod = m_world->CreateBody(bd);
 	 		valveRod->CreateFixture(fd1);
 	 		valveRod->CreateFixture(fd2);
@@ -315,7 +315,7 @@
 	 		bs2.SetAsBox(1.5*scale,0.25*scale, b2Vec2(-1.65*scale,0*scale), 0);
 	 		fd2->shape = &bs2;
 	 		fd2->filter.groupIndex = -1;
-	 		bd->gravityScale=0.f;
+	 		// bd->gravityScale=0.f;
 	 		piston = m_world->CreateBody(bd);
 	 		piston->CreateFixture(fd1);
 	 		piston->CreateFixture(fd2);
@@ -411,7 +411,7 @@
 	 		fd9->friction = 0.0;
 	 		fd9->restitution = 1.f; 
 	 		fd9->shape = new b2PolygonShape;
-	 		b2PolygonShape bs9;
+	 		b2PolygonShape bs9;	
 	 		b2Vec2 vertices[4];
 	 		vertices[0].Set(16.5*scale_e,-5.2*scale_e);
 	 		vertices[1].Set(19.7*scale_e,-5.2*scale_e);
@@ -419,8 +419,48 @@
 	 		vertices[3].Set(17.0*scale_e,-5*scale_e);
 	 		bs9.Set(vertices,4);
 	 		fd9->shape = &bs9;
-	 		// fd2->filter.groupIndex = -1;
-	 		 bd->gravityScale=0.f;
+
+	 		b2Vec2 v4[4];
+	 		v4[3].Set(17.8*scale_e,+5*scale_e);
+	 		v4[2].Set(17.8*scale_e,+2.5*scale_e);
+	 		v4[1].Set(15.2*scale_e,0*scale_e);
+	 		v4[0].Set(15.2*scale_e,-3*scale_e);
+	 		b2ChainShape chain4;
+	 		chain4.CreateChain(v4, 4);
+	 		b2FixtureDef *fd10 = new b2FixtureDef;
+	 		fd10->density = 10;
+	 		fd10->friction = 0.0;
+	 		fd10->restitution = 1.f;
+	 		fd10->shape=new b2ChainShape;
+	 		fd10->shape=&chain4;
+
+	 		b2Vec2 v3[4];
+	 		v3[3].Set(18.2*scale_e,+5*scale_e);
+	 		v3[2].Set(18.2*scale_e,+2.5*scale_e);
+	 		v3[1].Set(21*scale_e,0*scale_e);
+	 		v3[0].Set(21*scale_e,-3*scale_e);
+	 		b2ChainShape chain3;
+	 		chain3.CreateChain(v3, 4);
+	 		b2FixtureDef *fd11 = new b2FixtureDef;
+	 		fd11->density = 10;
+	 		fd11->friction = 0.0;
+	 		fd11->restitution = 1.f;
+	 		fd11->shape=&chain3;
+	 		 // bd->gravityScale=0.f;
+	 		b2Vec2 v2[5];
+	 		v2[4].Set(20.6*scale_e,-3*scale_e);
+	 		v2[3].Set(20.6*scale_e,-0.5*scale_e);
+	 		v2[2].Set(18	*scale_e,+2*scale_e);
+	 		v2[1].Set(15.6*scale_e,-0.5*scale_e);
+	 		v2[0].Set(15.6*scale_e,-3*scale_e);
+	 		b2ChainShape chain2;
+	 		chain2.CreateChain(v2, 5);
+	 		b2FixtureDef *fd12 = new b2FixtureDef;
+	 		fd12->density = 10;
+	 		fd12->friction = 0.0;
+	 		fd12->restitution = 1.f;
+	 		fd12->shape=&chain2;
+
 	 		engineBox = m_world->CreateBody(bd);
 	 		engineBox->CreateFixture(fd1);
 	 		engineBox->CreateFixture(fd2);
@@ -431,9 +471,89 @@
 	 		engineBox->CreateFixture(fd7);
 	 		engineBox->CreateFixture(fd8);
 	 		engineBox->CreateFixture(fd9);
+	 		engineBox->CreateFixture(fd10);
+	 		engineBox->CreateFixture(fd11);
+	 		engineBox->CreateFixture(fd12);
 					// piston->SetLinearVelocity(b2Vec2(2,0));
 	 	}
 
+	 	{
+	 		b2RevoluteJointDef jointDef5;
+	 		jointDef5.bodyA = wheel1;
+	 		jointDef5.bodyB = engineBox;
+	 		jointDef5.collideConnected = false;
+	 		jointDef5.localAnchorA = b2Vec2(0,0);
+	 		jointDef5.localAnchorB = b2Vec2(-xpos_e,-ypos_e+wheelRadius);
+	 		b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+	 	}
+	 	{
+	 		b2RevoluteJointDef jointDef5;
+	 		jointDef5.bodyA = wheel2;
+	 		jointDef5.bodyB = engineBox;
+	 		jointDef5.collideConnected = false;
+	 		jointDef5.localAnchorA = b2Vec2(0,0);
+	 		jointDef5.localAnchorB = b2Vec2(-xpos_e+2.1*wheelRadius,-ypos_e+wheelRadius);
+	 		b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+	 	}
+	 	{
+	 		b2RevoluteJointDef jointDef5;
+	 		jointDef5.bodyA = wheel3;
+	 		jointDef5.bodyB = engineBox;
+	 		jointDef5.collideConnected = false;
+	 		jointDef5.localAnchorA = b2Vec2(0,0);
+	 		jointDef5.localAnchorB = b2Vec2(-xpos_e+4.2*wheelRadius,-ypos_e+wheelRadius);
+	 		b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+	 	}
+	 	{       
+	 		b2BodyDef exhaustbd;
+	 		exhaustbd.position.Set(xpos_e+15.4*scale_e, ypos_e-3.3*scale_e);
+	 		b2CircleShape ext_entry;
+	 		ext_entry.m_radius = 0.2*scale_e;
+	 		b2FixtureDef *fd7 = new b2FixtureDef;
+	 		fd7->shape = new b2CircleShape;
+	 		fd7->shape=&ext_entry;
+	 		fd7->restitution = 0.f;
+	 		fd7->friction = 1;
+	 		fd7->density = 60.0f;
+	 		exhaustbd.type = b2_dynamicBody;
+	 		ext1 = m_world->CreateBody(&exhaustbd);
+	 		ext1->CreateFixture(fd7);
+	 		ext1->SetUserData(this);
+	 	}
+	 	{
+	 		b2WeldJointDef weldJointDef;
+	 		weldJointDef.bodyA = engineBox;
+	 		weldJointDef.bodyB = ext1;
+	 		weldJointDef.collideConnected = false;
+	 		weldJointDef.localAnchorA.Set(15.4*scale_e,-3.3*scale_e);//xpos_e+15.5*scale_e, ypos_e-3.8*scale_e);
+	 		weldJointDef.localAnchorB.Set(0,0);
+	 		b2Joint *m_joint = (b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
+	 	}
+	 	{       
+	 		b2BodyDef exhaustbd;
+	 		exhaustbd.position.Set(xpos_e+20.8*scale_e, ypos_e-3.3*scale_e);
+	 		b2CircleShape ext_entry;
+	 		ext_entry.m_radius = 0.2*scale_e;
+	 		b2FixtureDef *fd7 = new b2FixtureDef;
+	 		fd7->shape = new b2CircleShape;
+	 		fd7->shape=&ext_entry;
+	 		fd7->restitution = 0.f;
+	 		fd7->friction = 1;
+	 		fd7->density = 60.0f;
+	 		exhaustbd.type = b2_dynamicBody;
+	 		ext2 = m_world->CreateBody(&exhaustbd);
+	 		ext2->CreateFixture(fd7);
+	 		ext2->SetUserData(this);
+	 	}
+	 	{
+	 		b2WeldJointDef weldJointDef;
+	 		weldJointDef.bodyA = engineBox;
+	 		weldJointDef.bodyB = ext2;
+	 		weldJointDef.collideConnected = false;
+	 		weldJointDef.localAnchorA.Set(20.8*scale_e,-3.3*scale_e);//xpos_e+15.5*scale_e, ypos_e-3.8*scale_e);
+	 		weldJointDef.localAnchorB.Set(0,0);
+	 		b2Joint *m_joint = (b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
+	 	}
 	 }
 
 	 sim_t *sim = new sim_t("Dominos", dominos_t::create);
