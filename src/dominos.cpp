@@ -114,9 +114,9 @@ b2Body* engineBox;
 	 		bd.position += b2Vec2(2.1*wheelRadius, 0);
 	 		wheel3 = m_world->CreateBody(&bd);
 	 		wheel3->CreateFixture(&fd);
-	 		wheel3->SetAngularVelocity(10);
-	 		wheel2->SetAngularVelocity(10);
-	 		wheel1->SetAngularVelocity(10);
+	 		// wheel3->SetAngularVelocity(10);
+	 		// wheel2->SetAngularVelocity(10);
+	 		// wheel1->SetAngularVelocity(10);
 	 	}
 
 	 	b2Body *ext1,*ext2,*piston,*smallRod1, *smallRod2, *smallRod3, *longRod, *dRod, *msRod, *rod1, *rod2, *rod3, *rod4, *rod5,*valveRod;
@@ -241,24 +241,24 @@ b2Body* engineBox;
 	 		bd->fixedRotation = true;
 
 	 		b2FixtureDef *fd1 = new b2FixtureDef;
-	 		fd1->density = 100.0;
+	 		fd1->density = 10.0;
 	 		fd1->friction = 0;
 	 		fd1->restitution = 1.f;
+	 		fd1->filter.groupIndex = -1;
 	 		fd1->shape = new b2PolygonShape;
 	 		b2PolygonShape bs1;
 	 		bs1.SetAsBox(2*scale_v,0.9*scale_v, b2Vec2(0*scale_v,0.f*scale_v), 0);
 	 		fd1->shape = &bs1;
 	 		b2FixtureDef *fd2 = new b2FixtureDef;
-	 		fd2->density = 100.0;
+	 		fd2->density = 10.0;
 	 		fd2->friction = 0;
-	 		fd2->restitution = 1.f;
-	 		//fd2->filter.groupIndex = -1; 
+	 		fd2->restitution = 1.f; 
 	 		fd2->shape = new b2PolygonShape;
 	 		b2PolygonShape bs2;
 	 		bs2.SetAsBox(0.2*scale_v,1*scale_v, b2Vec2(-2*scale_v,0.f*scale_v), 0);
 	 		fd2->shape = &bs2;
 	 		b2FixtureDef *fd3 = new b2FixtureDef;
-	 		fd3->density = 100.0;
+	 		fd3->density = 10.0;
 	 		fd3->friction = 0;
 	 		fd3->restitution = 1.f;
 	 		fd3->shape = new b2PolygonShape;
@@ -266,7 +266,7 @@ b2Body* engineBox;
 	 		bs3.SetAsBox(0.2*scale_v,1*scale_v, b2Vec2(2*scale_v,0.f*scale_v), 0);
 	 		fd3->shape = &bs3;
 	 		b2FixtureDef *fd4 = new b2FixtureDef;
-	 		fd4->density = 100.0;
+	 		fd4->density = 10.0;
 	 		fd4->friction = 0;
 	 		fd4->restitution = 1.f;
 	 		fd4->filter.groupIndex = -1;
@@ -280,7 +280,7 @@ b2Body* engineBox;
 	 		valveRod->CreateFixture(fd2);
 	 		valveRod->CreateFixture(fd3);
 	 		valveRod->CreateFixture(fd4);
-	 		valveRod->SetLinearVelocity(b2Vec2(2,0));
+	 		// valveRod->SetLinearVelocity(b2Vec2(2,0));
 	 	}
 
 	 	{
@@ -321,7 +321,7 @@ b2Body* engineBox;
 	 		piston = m_world->CreateBody(bd);
 	 		piston->CreateFixture(fd1);
 	 		piston->CreateFixture(fd2);
-			 piston->SetLinearVelocity(b2Vec2(2,0));
+			 // piston->SetLinearVelocity(b2Vec2(2,0));
 	 	}
 	 					//prismatic joint between piston and engine exterior
 	 	{
@@ -369,7 +369,9 @@ b2Body* engineBox;
 	 		b2FixtureDef *fd4 = new b2FixtureDef;
 	 		fd4->density = 10;
 	 		fd4->friction = 0.0;
-	 		fd4->restitution = 1.f; 
+	 		fd4->restitution = 1.f;
+	 		fd4->filter.groupIndex = -2;
+	 		fd4->filter.maskBits = 0x0001; 
 	 		fd4->shape = new b2PolygonShape;
 	 		b2PolygonShape bs4;
 	 		bs4.SetAsBox(0.4*scale_e,1.5*scale_e, b2Vec2(15.6f*scale_e,-6.5f*scale_e), 0);

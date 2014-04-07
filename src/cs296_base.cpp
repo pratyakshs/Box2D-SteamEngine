@@ -195,7 +195,7 @@ void base_sim_t::step(settings_t* settings)
   	  counter=0;
   {
 	  int numballs;
-	  if(accl)numballs=3;
+	  if(accl){numballs=3;accl=false;}
 	  else if(stop)numballs=0;
 	  else numballs=0;
 	  //if(checker)accl=true;
@@ -205,8 +205,8 @@ void base_sim_t::step(settings_t* settings)
 	  for (int i = 0; i < numballs; i++) {
       float angle = (rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
-	  b2Vec2 center = b2Vec2(xpos_e+0,ypos_e+8*scale_e);
-	  int blastPower=100;
+      b2Vec2 center = engineBox->GetPosition()+b2Vec2(18*scale_e,-3 *scale_e);
+	    int blastPower=100;
       b2BodyDef bd;
       bd.type = b2_dynamicBody;
       bd.fixedRotation = true; // rotation not necessary
@@ -218,11 +218,11 @@ void base_sim_t::step(settings_t* settings)
       b2Body* body = m_world->CreateBody( &bd );
 	  body->SetUserData( this );
       b2CircleShape circleShape;
-      circleShape.m_radius = 0.3; // very small
+      circleShape.m_radius = 0.05; // very small
   
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 60000; // very high - shared across all particles
+      fd.density = 1; // very high - shared across all particles
       fd.friction = 0; // friction not necessary
       fd.restitution = 0.f; // high restitution to reflect off obstacles
       fd.filter.groupIndex = -1; // particles should not collide with each other
