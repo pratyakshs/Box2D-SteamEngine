@@ -25,12 +25,12 @@
 #include <vector>      
 using namespace std;
 using namespace cs296;
-extern float xpos;
-extern float ypos;
-extern float scale;
+extern float xpos_e;
+extern float ypos_e;
+extern float scale_e;
 extern bool accl;
 extern bool stop;
-extern bool checker;
+extern b2Body* engineBox;
 int counter=0;
 vector <b2Body*> del_list;
   /*b2Body::~b2Body()
@@ -43,7 +43,11 @@ vector <b2Body*> del_list;
       //check if both fixtures were balls
       void* bodyAUserData = contact->GetFixtureA()->GetBody()->GetUserData();
       void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
-      if (bodyAUserData && bodyBUserData){counter++;del_list.push_back(contact->GetFixtureA()->GetBody());del_list.push_back(contact->GetFixtureB()->GetBody());}
+      if (bodyAUserData && bodyBUserData)
+        {
+          counter++;del_list.push_back(contact->GetFixtureA()->GetBody());
+          del_list.push_back(contact->GetFixtureB()->GetBody());
+        }
   }
   
     void EndContact(b2Contact* contact) {
@@ -161,7 +165,7 @@ void base_sim_t::step(settings_t* settings)
 	  for (int i = 0; i < num_balls; i++) {
       float angle = 0.2;//(rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
-	  b2Vec2 center = b2Vec2(xpos+1,ypos+3.5*scale);
+	  b2Vec2 center = engineBox->GetPosition()+b2Vec2(16*scale_e,-2.8*scale_e);
 	  int blastPower=10;
       b2BodyDef bd;
       bd.type = b2_dynamicBody;
@@ -174,7 +178,7 @@ void base_sim_t::step(settings_t* settings)
       b2Body* body = m_world->CreateBody( &bd );
 	  //body->SetUserData( this );
       b2CircleShape circleShape;
-      circleShape.m_radius = 0.1; // very small
+      circleShape.m_radius = 0.2; // very small
   
       b2FixtureDef fd;
       fd.shape = &circleShape;
@@ -194,14 +198,14 @@ void base_sim_t::step(settings_t* settings)
 	  if(accl)numballs=3;
 	  else if(stop)numballs=0;
 	  else numballs=0;
-	  if(checker)accl=true;
-	  else accl=false;
+	  //if(checker)accl=true;
+	  //else accl=false;
 	    //srand (time(NULL));
 	    
 	  for (int i = 0; i < numballs; i++) {
       float angle = (rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
-	  b2Vec2 center = b2Vec2(xpos+0,ypos+8*scale);
+	  b2Vec2 center = b2Vec2(xpos_e+0,ypos_e+8*scale_e);
 	  int blastPower=100;
       b2BodyDef bd;
       bd.type = b2_dynamicBody;
@@ -214,11 +218,11 @@ void base_sim_t::step(settings_t* settings)
       b2Body* body = m_world->CreateBody( &bd );
 	  body->SetUserData( this );
       b2CircleShape circleShape;
-      circleShape.m_radius = 0.05; // very small
+      circleShape.m_radius = 0.3; // very small
   
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 60; // very high - shared across all particles
+      fd.density = 60000; // very high - shared across all particles
       fd.friction = 0; // friction not necessary
       fd.restitution = 0.f; // high restitution to reflect off obstacles
       fd.filter.groupIndex = -1; // particles should not collide with each other

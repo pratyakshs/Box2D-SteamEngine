@@ -14,9 +14,9 @@
 #else
 #include "GL/glui.h"
 #endif
-extern float xpos;
-extern float ypos;
-extern float scale;
+extern float xpos_e;
+extern float ypos_e;
+extern float scale_e;
 extern bool accl;
 extern bool stop;
 //! The namespace protects the global variables and other names from
