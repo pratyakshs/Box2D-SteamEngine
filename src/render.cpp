@@ -35,7 +35,6 @@
 #include <cstring>
 
 using namespace std;
-
 void debug_draw_t::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
 	glColor3f(color.r, color.g, color.b);

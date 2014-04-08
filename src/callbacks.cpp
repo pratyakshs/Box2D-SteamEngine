@@ -27,7 +27,7 @@ extern float ypos_e;
 extern float scale_e;
 extern bool accl;
 extern bool stop;
-// extern queue <smoke*> smoke_list;
+extern queue <smoke*> smoke_list;
 //! The namespace protects the global variables and other names from
 //! clashes in scope. Read about the use of named and unnamed
 //! namespaces in C++ Figure out where all the datatypes used below
@@ -123,7 +123,7 @@ namespace cs296
     //! Press 'r' to reset.
     case 'r':
       delete test;
-      // while(!smoke_list.empty())smoke_list.pop();
+       while(!smoke_list.empty())smoke_list.pop();
       test = entry->create_fcn();
       break;
       
@@ -131,16 +131,14 @@ namespace cs296
     case 'p':
       settings.pause = !settings.pause;
       break;
+      //! Press 'w' to acclerate
     case 'w':
 		stop=false;
 		accl=true;
 		break;
+    ///! press 's' to deacclerate
 	case 's':
 		stop=true;
-		accl=false;
-      break;
-	case 'q':
-		stop=false;
 		accl=false;
       break;      
       //! The default case. Why is this needed?

@@ -39,9 +39,10 @@ struct smoke{
   smoke(){
   }
 };
-
+/// This vector stores all objects which contact with exhaust and are to be deleted
 vector <b2Body*> del_list;
- queue <smoke*> smoke_list;
+/// This stores 
+queue <smoke*> smoke_list;
 
 class MyContactListener : public b2ContactListener
 {
@@ -120,7 +121,7 @@ class MyContactListener : public b2ContactListener
     contact->GetWorldManifold(&world_manifold);
 
     for (int32 i = 0; i < manifold->pointCount && m_point_count < k_max_contact_points; ++i)
-    {
+    { 
       contact_point_t* cp = m_points + m_point_count;
       cp->fixtureA = fixtureA;
       cp->fixtureB = fixtureB;
@@ -177,8 +178,8 @@ class MyContactListener : public b2ContactListener
    {
      int num_balls;
      float pos;
-     if(j==0){num_balls=count1;pos=15.4;}
-     else {num_balls=count2;pos=20.8;}
+     if(j==0){num_balls=count1*15;pos=15.4;}
+     else {num_balls=count2*15;pos=20.8;}
      for (int i = 0; i < num_balls; i++) {
       float angle =0;//(rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
@@ -251,7 +252,7 @@ class MyContactListener : public b2ContactListener
       circleShape.m_radius = 0.05; // very small
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 0.01; // very high - shared across all particles
+      fd.density = 10; // very high - shared across all particles
       fd.friction = 0; // friction not necessary
       fd.restitution = 0.f; // high restitution to reflect off obstacles
       fd.filter.groupIndex = -5; // particles should not collide with each other
