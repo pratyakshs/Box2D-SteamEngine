@@ -126,7 +126,6 @@ namespace cs296
        while(!smoke_list.empty())smoke_list.pop();
       test = entry->create_fcn();
       break;
-      
       //! Press 'p' to pause.
     case 'p':
       settings.pause = !settings.pause;

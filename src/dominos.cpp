@@ -25,6 +25,7 @@
 #include<stdio.h>
 #include "cs296_base.hpp"
 #include "render.hpp"
+#include <stdint.h>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -88,11 +89,14 @@
 
 	 	/// The gorund body 
  		b2Body* b1;
-	 	/** xpos_e = x-position of engine 
-	 		ypos_e = y-position of engine
-	 		scale_e = scale of engine
-	 		xpos,ypos,scale correspond to valveRod
-	 		xpos_p,ypos_p , scale_p correspond to pistonRod
+	 	/*! b2Body* b1 : This is GROUND body \n
+	 	*/
+	 	/*! GLBAL VARIABLES
+	 		xpos_e = x-position of engine \n
+	 		ypos_e = y-position of engine \n
+	 		scale_e = scale of engine \n
+	 		xpos,ypos,scale correspond to valveRod \n
+	 		xpos_p,ypos_p , scale_p correspond to pistonRod \n
 	 		scale_p is the scale for all scales
 	 	*/
 	 		float xpos,ypos,scale,xpos_e,ypos_e,scale_p = 1.1;
@@ -104,7 +108,7 @@
 	 	scale = 1.49/scale_p;
 	 	float xpos_p=xpos_e+ 18*scale_e;
 	 	float ypos_p=ypos_e-6.7*scale_e;
-	 	///The defination for ground.
+	 	//The defination for ground.
 	 	{
 
 	 		b2PolygonShape shape; 
@@ -118,11 +122,12 @@
 	 		groundFixture.density = 10000.0;
 	 		b1->CreateFixture(&groundFixture);
 	 	}
-	 	/// The three wheels for the engine.
+	 	/// b2body* wheel1,wheel2,wheel3 
+	 	///The three wheels for the engine. \n
+	 	/// The wheels have radius 6 units each\n
 	 	b2Body *wheel1, *wheel2, *wheel3;
-	 	/// The radius of the wheel 
 	 	float wheelRadius = 6;
-	 	/// The definations for three wheels of the train
+	 	// The definations for three wheels of the train
 	 	{
 	 		b2BodyDef bd;
 	 		bd.type = b2_dynamicBody;
@@ -157,9 +162,9 @@
 	 	 valveRod is the valveRod of the engine
 	 	 write here about rod1-rod10
 	 	*/
-	 	 b2Body *smallRod1, *smallRod2, *smallRod3, *longRod, *dRod, *msRod, *rod1, *rod2, *rod3, *rod4, *rod5, *rod6, *rod7, *rod8, *rod9, *rod10, *valveRod,	*ext1,*ext2,*piston;
+	 	 b2Body *smallRod1, *smallRod2, *smallRod3, *longRod, *dRod, *msRod, *rod1, *rod2, *rod3, *rod4, *rod5,*rod7, *rod8, *rod9, *rod10, *valveRod,	*ext1,*ext2,*piston;
 	 	/// The lenght of long rod
-	 	 float lrLength = (wheel3->GetPosition() - wheel1->GetPosition()).x/2, msrLength, drLength, length1, length2, length3, length4, length5, length6, length7, length8, length9, length10;
+	 	 float lrLength = (wheel3->GetPosition() - wheel1->GetPosition()).x/2, msrLength, drLength, length1, length2, length3, length4, length5,length7, length8, length9, length10;
 	 	/// The defination for all the bodies connecting the wheels and joints
 	 	 {
 	 	 	float rodLength = 1.25, outerRadius = 0.6, innerRadius = 0.3, srThickness = 0.3;
@@ -171,9 +176,11 @@
 	 	 	smallRod2 = m_world->CreateBody(&myBodyDef);
 	 	 	smallRod1 = m_world->CreateBody(&myBodyDef);
 
+	 	 	
 	 	 	b2PolygonShape boxShape;
 	 	 	boxShape.SetAsBox(rodLength, srThickness);
 
+	 	 	
 	 	 	b2FixtureDef boxFixtureDef;
 	 	 	boxFixtureDef.shape = &boxShape;
 	 	 	boxFixtureDef.density = 10.0;
@@ -182,6 +189,7 @@
 	 	 	smallRod1->CreateFixture(&boxFixtureDef);
 	 	 	smallRod2->CreateFixture(&boxFixtureDef);
 	 	 	smallRod3->CreateFixture(&boxFixtureDef);
+
 
 	 	 	b2CircleShape circle;
 	 	 	circle.m_radius = outerRadius;
@@ -192,10 +200,12 @@
 	 	 	circle_fix.friction = 10;
 	 	 	circle_fix.filter.groupIndex = -1;
 
+	 	 	
 	 	 	addCircles(smallRod1);
 	 	 	addCircles(smallRod2);
 	 	 	addCircles(smallRod3);
 
+	 	 	
 	 	 	smallRod1->SetTransform(wheel1->GetPosition() - b2Vec2(0, rodLength), -PI/2);
 	 	 	smallRod2->SetTransform(wheel2->GetPosition() - b2Vec2(0, rodLength), -PI/2);
 	 	 	smallRod3->SetTransform(wheel3->GetPosition() - b2Vec2(0, rodLength), -PI/2);
@@ -203,11 +213,11 @@
 	 		///The joint definations between smallRods and corresponding wheels
 	 	 	b2WeldJointDef jointDef;
 	 	 	jointDef.Initialize(wheel1, smallRod1, wheel1->GetWorldCenter());
-	 	 	b2WeldJoint* joint = (b2WeldJoint*)m_world->CreateJoint(&jointDef);
+	 	 	(b2WeldJoint*)m_world->CreateJoint(&jointDef);
 	 	 	jointDef.Initialize(wheel2, smallRod2, wheel2->GetWorldCenter());
-	 	 	joint = (b2WeldJoint*)m_world->CreateJoint(&jointDef);
+	 	 	(b2WeldJoint*)m_world->CreateJoint(&jointDef);
 	 	 	jointDef.Initialize(wheel3, smallRod3, wheel3->GetWorldCenter());
-	 	 	joint = (b2WeldJoint*)m_world->CreateJoint(&jointDef);
+	 	 	(b2WeldJoint*)m_world->CreateJoint(&jointDef);
 	 		///The definations of longrod and the joints of longrod is declared here
 	 	 	{
 	 			///The defination of longRod
@@ -237,8 +247,8 @@
 	 	 		b2Vec2 pos = longRod->GetPosition()+polar(rodLength, atan(2.5/18.2));
 	 	 		dRod->SetTransform(pos, theta);
 	 	 		b2RevoluteJointDef jointDef;
-	 	 		jointDef.Initialize(longRod, dRod, longRod->GetWorldCenter());
-	 	 		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 		jointDef.Initialize(longRod, dRod, longRod->GetWorldCenter()); 
+	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -247,7 +257,7 @@
 	 	 		msRod->SetTransform(pos, theta);
 	 	 		b2WeldJointDef jointDef;
 	 	 		jointDef.Initialize(wheel2, msRod, longRod->GetWorldCenter());
-	 	 		b2WeldJoint* joint = (b2WeldJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2WeldJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -256,7 +266,7 @@
 	 	 		rod1->SetTransform(pos, theta);
 	 	 		b2RevoluteJointDef jointDef;
 	 	 		jointDef.Initialize(msRod, rod1, msRod->GetWorldCenter()+b2Vec2(msrLength*cos(msRod->GetAngle()), msrLength*sin(msRod->GetAngle())));
-	 	 		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -265,7 +275,7 @@
 	 	 		rod2->SetTransform(pos, theta);
 	 	 		b2RevoluteJointDef jointDef;
 	 	 		jointDef.Initialize(rod2, rod1, rod1->GetWorldCenter()+polar(length1, rod1->GetAngle()));
-	 	 		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -274,7 +284,7 @@
 	 	 		rod4->SetTransform(pos, theta);
 	 	 		b2WeldJointDef jointDef;
 	 	 		jointDef.Initialize(rod2, rod4, rod2->GetWorldCenter()+polar(length2, rod2->GetAngle()));
-	 	 		b2WeldJoint* joint = (b2WeldJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2WeldJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -284,7 +294,7 @@
 	 	 		rod3->SetTransform(pos, theta);
 	 	 		b2RevoluteJointDef jointDef;
 	 	 		jointDef.Initialize(rod2, rod3, rod2->GetWorldCenter()+polar(length2, rod2->GetAngle()));
-	 	 		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -293,7 +303,7 @@
 	 	 		rod5->SetTransform(pos, theta);
 	 	 		b2RevoluteJointDef jointDef;
 	 	 		jointDef.Initialize(rod3, rod5, rod3->GetWorldCenter()-polar(length3, rod3->GetAngle()));
-	 	 		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -308,7 +318,7 @@
 
 	 	 		b2RevoluteJointDef jointDef;
 	 	 		jointDef.Initialize(rod7, rod3, rod3->GetWorldCenter()+polar(length3, rod3->GetAngle()));
-	 	 		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -318,7 +328,7 @@
 	 	 		rod8->SetTransform(pos, theta);
 	 	 		b2RevoluteJointDef jointDef;
 	 	 		jointDef.Initialize(rod7, rod8, rod7->GetWorldCenter()-polar(length7, rod7->GetAngle()));
-	 	 		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -327,7 +337,7 @@
 	 	 		rod9->SetTransform(pos, theta);
 	 	 		b2RevoluteJointDef jointDef;
 	 	 		jointDef.Initialize(rod9, rod8, rod8->GetWorldCenter()-polar(length8, rod8->GetAngle()));
-	 	 		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
@@ -337,15 +347,15 @@
 
 	 	 		b2RevoluteJointDef jointDef;
 	 	 		jointDef.Initialize(rod10, dRod, rod10->GetWorldCenter());
-	 	 		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 
 	 	 		b2PrismaticJointDef jointDef2;
 	 	 		jointDef2.Initialize(rod10, b1, rod10->GetWorldCenter(), b2Vec2(1,0));
-	 	 		b2PrismaticJoint* joint2 = (b2PrismaticJoint*)m_world->CreateJoint(&jointDef2);
+	 	 		(b2PrismaticJoint*)m_world->CreateJoint(&jointDef2);
 
 	 	 		b2WeldJointDef jointDef3;
 	 	 		jointDef3.Initialize(rod10, rod9, rod9->GetWorldCenter()+polar(length9, rod9->GetAngle()));
-	 	 		b2WeldJoint* joint3 = (b2WeldJoint*)m_world->CreateJoint(&jointDef3);
+	 	 		(b2WeldJoint*)m_world->CreateJoint(&jointDef3);
 	 	 	}
 	 	 }
 ////////////////////////////////////////////////////////////////////////////
@@ -422,7 +432,7 @@
 	 	 	prismaticJointDef.localAnchorA.Set(0,ypos);
 	 	 	prismaticJointDef.localAnchorB.Set(0,0);
 
-	 	 	b2Joint *m_joint = (b2PrismaticJoint*)m_world->CreateJoint( &prismaticJointDef );
+	 	 	(b2PrismaticJoint*)m_world->CreateJoint( &prismaticJointDef );
 	 	 }
 	 	///The defination for piston
 	 	 {
@@ -473,7 +483,7 @@
 	 	 	prismaticJointDef.localAnchorA.Set(0,ypos_p);
 	 	 	prismaticJointDef.localAnchorB.Set(0,0);
 
-	 	 	b2Joint *m_joint = (b2PrismaticJoint*)m_world->CreateJoint( &prismaticJointDef );
+	 	 	(b2PrismaticJoint*)m_world->CreateJoint( &prismaticJointDef );
 	 	 }
 	 	 ///The defination for engineBody
 	 	 {
@@ -506,7 +516,7 @@
 	 	 	fd2->shape = &bs2;
 	 	 	b2FixtureDef *fd3 = new b2FixtureDef;
 	 	 	
-
+	 	 	///This fixture corresponds to vertical body which is located at bottom right of engineBody
 	 	 	fd3->density = 10;
 	 	 	fd3->friction = 0.0;
 	 	 	fd3->restitution = 1.f; 
@@ -516,7 +526,7 @@
 	 	 	fd3->shape = &bs3;
 	 	 	b2FixtureDef *fd4 = new b2FixtureDef;
 	 	 	
-
+	 	 	///This fixture corresponds to vertical body which is located at bottom left of engineBody
 	 	 	fd4->density = 10;
 	 	 	fd4->friction = 0.0;
 	 	 	fd4->restitution = 1.f; 
@@ -528,7 +538,7 @@
 	 	 	fd4->filter.maskBits = 0x0001;
 	 	 	b2FixtureDef *fd5 = new b2FixtureDef;
 	 	 	
-
+	 	 	///This fixture corresponds to vertical body which is located at  top left of engineBody
 	 	 	fd5->density = 10;
 	 	 	fd5->friction = 0.0;
 	 	 	fd5->restitution = 1.f;
@@ -540,7 +550,7 @@
 	 	 	fd5->shape = &bs5;
 	 	 	b2FixtureDef *fd6 = new b2FixtureDef;
 	 	 	
-
+	 	 	///This fixture corresponds to vertical body which is located at  top right of engineBody
 	 	 	fd6->density = 10;
 	 	 	fd6->friction = 0.0;
 	 	 	fd6->restitution = 1.f; 
@@ -549,7 +559,7 @@
 	 	 	bs6.SetAsBox(0.1*scale_e,1*scale_e, b2Vec2(21.1f*scale_e,-4.f*scale_e), 0);
 	 	 	fd6->shape = &bs6;
 	 	 	
-
+	 	 	///This fixture corresponds to horizontal body which is located at  top left of engineBody
 	 	 	b2FixtureDef *fd7 = new b2FixtureDef;
 	 	 	fd7->density = 10;
 	 	 	fd7->friction = 0.0;
@@ -559,7 +569,7 @@
 	 	 	bs7.SetAsBox(1.25*scale_e,0.2*scale_e, b2Vec2(16.25f*scale_e,-2.8f*scale_e), 0);
 	 	 	fd7->shape = &bs7;
 	 	 	
-
+	 	 	///This fixture corresponds to horizontal body which is located at  top right of engineBody
 	 	 	b2FixtureDef *fd8 = new b2FixtureDef;
 	 	 	fd8->density = 10;
 	 	 	fd8->friction = 0.0;
@@ -569,7 +579,7 @@
 	 	 	bs8.SetAsBox(1.25*scale_e,0.2*scale_e, b2Vec2(19.75f*scale_e,-2.8f*scale_e), 0);
 	 	 	fd8->shape = &bs8;
 	 	 	
-
+	 	 	///This fixture corresponds to horizontal body which is located at center of engineBody
 	 	 	b2FixtureDef *fd9 = new b2FixtureDef;
 	 	 	fd9->density = 10;
 	 	 	fd9->friction = 0.0;
@@ -584,7 +594,7 @@
 	 	 	bs9.Set(vertices,4);
 	 	 	fd9->shape = &bs9;
 
-	 	 	
+	 	 	///This fixture corresponds to chain top left of engineBody
 	 	 	b2Vec2 v4[4];
 	 	 	v4[3].Set(17.8*scale_e,+5*scale_e);
 	 	 	v4[2].Set(17.8*scale_e,+2.5*scale_e);
@@ -599,7 +609,7 @@
 	 	 	fd10->shape=new b2ChainShape;
 	 	 	fd10->shape=&chain4;
 
-	 	 	
+	 	 	///This fixture corresponds to chain top right of engineBody
 	 	 	b2Vec2 v3[4];
 	 	 	v3[3].Set(18.2*scale_e,+5*scale_e);
 	 	 	v3[2].Set(18.2*scale_e,+2.5*scale_e);
@@ -613,7 +623,7 @@
 	 	 	fd11->restitution = 1.f;
 	 	 	fd11->shape=&chain3;
 
-
+	 	 	///This fixture corresponds to chain on center of engineBody
 	 	 	b2Vec2 v2[5];
 	 	 	v2[4].Set(20.6*scale_e,-3*scale_e);
 	 	 	v2[3].Set(20.6*scale_e,-0.5*scale_e);
@@ -652,7 +662,7 @@
 	 	 	jointDef5.collideConnected = false;
 	 	 	jointDef5.localAnchorA = b2Vec2(0,0);
 	 	 	jointDef5.localAnchorB = b2Vec2(-xpos_e,-ypos_e+wheelRadius);
-	 	 	b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+	 	 	(b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
 	 	 }
 
 	 	 ///The revolutejoint between engineBox and wheel2
@@ -663,7 +673,7 @@
 	 	 	jointDef5.collideConnected = false;
 	 	 	jointDef5.localAnchorA = b2Vec2(0,0);
 	 	 	jointDef5.localAnchorB = b2Vec2(-xpos_e+2.1*wheelRadius,-ypos_e+wheelRadius);
-	 	 	b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+	 	 	(b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
 	 	 }
 
 	 	 ///The revolutejoint between engineBox and wheel3
@@ -674,7 +684,7 @@
 	 	 	jointDef5.collideConnected = false;
 	 	 	jointDef5.localAnchorA = b2Vec2(0,0);
 	 	 	jointDef5.localAnchorB = b2Vec2(-xpos_e+4.2*wheelRadius,-ypos_e+wheelRadius);
-	 	 	b2RevoluteJoint* joint2 = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
+	 	 	(b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
 	 	 }
 
 	 	 ///The defination of exhaust body ext1
@@ -694,7 +704,8 @@
 	 	 	ext1 = m_world->CreateBody(&exhaustbd);
 	 	 	ext1->CreateFixture(fd7);
 	 	 	int left=2;	
-	 	 	ext1->SetUserData((void*)left);
+	 	 	void* ls = (void*) (intptr_t) left;
+	 	 	ext1->SetUserData(ls);
 	 	 }
 
 	 	 /// Weld joint between engineBox and exhuast1
@@ -705,7 +716,7 @@
 	 	 	weldJointDef.collideConnected = false;
 	 	 	weldJointDef.localAnchorA.Set(15.4*scale_e,-3.3*scale_e);
 	 	 	weldJointDef.localAnchorB.Set(0,0);
-	 	 	b2Joint *m_joint = (b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
+	 	 	(b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
 	 	 }
 	 	 
 	 	 ///The defination of exhaust body ext2
@@ -724,8 +735,9 @@
 	 	 	exhaustbd.type = b2_dynamicBody;
 	 	 	ext2 = m_world->CreateBody(&exhaustbd);
 	 	 	ext2->CreateFixture(fd7);
-	 	 	int right=3;	
-	 	 	ext2->SetUserData((void*)right);
+	 	 	int right=3;
+	 	 	void* ls = (void*) (intptr_t) right;	
+	 	 	ext2->SetUserData(ls);
 	 	 }
 
 	 	 /// Weld joint between engineBox and exhuast2
@@ -736,7 +748,7 @@
 	 	 	weldJointDef.collideConnected = false;
 	 	 	weldJointDef.localAnchorA.Set(20.8*scale_e,-3.3*scale_e);
 	 	 	weldJointDef.localAnchorB.Set(0,0);
-	 	 	b2Joint *m_joint = (b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
+	 	    (b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
 	 	 }
 
 	 	 ///Joints which connect 3- wheel system to trainBox and engineBody
@@ -744,19 +756,19 @@
 			///revolutejoint between rod4 and enginebox
 	 	 	b2RevoluteJointDef jointDef;
 	 	 	jointDef.Initialize(rod4, engineBox, rod4->GetWorldCenter() - polar(length4, rod4->GetAngle()));
-	 	 	b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	    (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 
 			///revolutejoint between rod5 and enginebox
 	 	 	jointDef.Initialize(rod5, engineBox, rod5->GetWorldCenter() - polar(length5, rod5->GetAngle()));
-	 	 	joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+	 	 	(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 
 			///revolutejoint between rod10 and piston
 	 	 	jointDef.Initialize(rod10, piston, rod10->GetWorldCenter());
-	 	 	joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);		
+	 	 	(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);		
 
 			///revolutejoint between rod7 and valveRod
 	 	 	jointDef.Initialize(rod7, valveRod, rod7->GetWorldCenter() + polar(length7, rod7->GetAngle()) - polar(1.1/sin(rod7->GetAngle()), rod7->GetAngle()));
-	 	 	joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);		
+	 	 	(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);		
 	 	 }
 	 	}
 	 	sim_t *sim = new sim_t("Dominos", dominos_t::create);

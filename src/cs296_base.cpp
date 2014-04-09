@@ -23,16 +23,26 @@
 #include <stdlib.h>     
 #include <time.h>
 #include <vector>
-#include <queue>     
+#include <queue>
+#include <stdint.h>     
+//! Standard namespace for using std::queue and other functions 
 using namespace std;
 using namespace cs296; 
+//!The scaleof engine
 extern float scale_e;
+//!The variable which defines accleration
 extern bool accl;
+//!The variable which defines deaccleration
 extern bool stop;
+//! The main engineBox
 extern b2Body* engineBox;
+//!The count of number of particles which collide with ext1
 int count1=0;
+//!The count of number of particles which collide with ext2
 int count2=0;
+//!The count of number of times step() is called 
 int time_step_count=0;
+//!The custom defined class for storing time of creation of objects along with pointer to object 
 struct smoke{
   b2Body* mybody;
   int time_stamp;
@@ -41,13 +51,17 @@ struct smoke{
 };
 /// This vector stores all objects which contact with exhaust and are to be deleted
 vector <b2Body*> del_list;
-/// This stores 
+/// This stores all exhaust bodies which will be deleted after 200 time_step_counts
 queue <smoke*> smoke_list;
-
+///This class is defined checking some type of collisions
 class MyContactListener : public b2ContactListener
 {
+  //! This function is called when any bodies contact
   void BeginContact(b2Contact* contact) {
-      //check if both fixtures were balls
+      ///get the data from all fixtures from here
+      ///1 corresponds to ball
+      ///2 corresponds to ext1(exhaust1)
+      ///3 corresponds to ext2(exhaust2)
     void* bodyAUserData = contact->GetFixtureA()->GetBody()->GetUserData();
     void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
     if (bodyAUserData && bodyBUserData)
@@ -64,14 +78,9 @@ class MyContactListener : public b2ContactListener
       }
 
       void EndContact(b2Contact* contact) {
-
-      //check if fixture A was a ball
-      //void* bodyAUserData = contact->GetFixtureA()->GetBody()->GetUserData();
-      //void* bodyBUserData = contact->GetFixtureB()->GetBody()->GetUserData();
-      //if (bodyAUserData && bodyBUserData)counter++;
-
       }
     };
+    ///An object of mycontactListner is declared
     MyContactListener myContactListenerInstance;
     base_sim_t::base_sim_t()
     {
@@ -178,8 +187,8 @@ class MyContactListener : public b2ContactListener
    {
      int num_balls;
      float pos;
-     if(j==0){num_balls=count1*15;pos=15.4;}
-     else {num_balls=count2*15;pos=20.8;}
+     if(j==0){num_balls=count1;pos=15.4;}
+     else {num_balls=count2;pos=20.8;}
      for (int i = 0; i < num_balls; i++) {
       float angle =0;//(rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
@@ -217,6 +226,10 @@ class MyContactListener : public b2ContactListener
   time_step_count++;
   while(!smoke_list.empty()) 
   {
+    time_step_count =0;
+    count1=0;
+    count2=0;
+    del_list.clear();
     if(smoke_list.front()->time_stamp +200 <= time_step_count){
       m_world->DestroyBody(smoke_list.front()->mybody);
       smoke_list.pop();}
@@ -224,45 +237,41 @@ class MyContactListener : public b2ContactListener
     }
     {
      int numballs;
-    // printf("mark1");
      if(accl){numballs=3;accl=false;}
      else if(stop)numballs=0;
      else numballs=0;
-	  //if(checker)accl=true;
-	  //else accl=false;
-	    //srand (time(NULL));
 
      for (int i = 0; i < numballs; i++) {
       float angle = (rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
       b2Vec2 center =engineBox->GetPosition()+b2Vec2(18*scale_e,-3 *scale_e);
-      int blastPower=100;
+      int blastPower=10;
       b2BodyDef bd;
       bd.type = b2_dynamicBody;
       bd.fixedRotation = true; // rotation not necessary
       bd.bullet = true; // prevent tunneling at high speed
       bd.linearDamping = 0; // drag due to moving through air
       bd.gravityScale = 0; // ignore gravity
-      bd.position = center; // start at blast center
+      bd.position = center; // start at this center
       bd.linearVelocity = blastPower * rayDir;
       b2Body* body = m_world->CreateBody( &bd );
       int ballIndex=1;
-      body->SetUserData((void*)ballIndex);
+      void* ls = (void*) (intptr_t) ballIndex;
+      body->SetUserData(ls);
       b2CircleShape circleShape;
-      circleShape.m_radius = 0.05; // very small
+      circleShape.m_radius = 0.05; // small radius is set
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 10; // very high - shared across all particles
-      fd.friction = 0; // friction not necessary
-      fd.restitution = 0.f; // high restitution to reflect off obstacles
+      fd.density = 100000;  
+      fd.friction = 0; 
+      fd.restitution = 0.f; 
       fd.filter.groupIndex = -5; // particles should not collide with each other
-      fd.filter.categoryBits = 0x0001;
-      // fd.filter.maskBits = 0x0010; 
+      fd.filter.categoryBits = 0x0001; 
       body->CreateFixture( &fd );
     }	
   }
 
-  for (int i=0;i<del_list.size();i++)
+  for (unsigned int i=0;i<del_list.size();i++)
   {
     if(del_list[i]->IsBullet())m_world->DestroyBody(del_list[i]);	
   }
