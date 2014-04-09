@@ -35,22 +35,23 @@ struct b2AABB;
 class debug_draw_t : public b2Draw
 {
 public:
+	///The function for responsible for drawing Polygons using glut/glui
   void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
-  
+  ///The function for responsible for drawing SolidPolygons using glut/glui
   void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
-  
+  ///The function for responsible for drawing cicles using glut/glui
   void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color);
-  
+  ///The function for responsible for drawing solidcircles using glut/glui
   void DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color);
-  
+  ///The function for responsible for drawing segments using glut/glui
   void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color);
-  
+  ///The function for responsible for drawing transform using glut/glui
   void DrawTransform(const b2Transform& xf);
-  
+  ///The function for responsible for drawing points using glut/glui
   void DrawPoint(const b2Vec2& p, float32 size, const b2Color& color);
-  
+  ///The function for responsible for drawing string using glut/glui
   void DrawString(int x, int y, const char* string, ...); 
-  
+  ///The function for responsible for drawing AABB's using glut/glui
   void DrawAABB(b2AABB* aabb, const b2Color& color);
 };
 

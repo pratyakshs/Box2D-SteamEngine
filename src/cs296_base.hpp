@@ -162,9 +162,9 @@ namespace cs296
       B2_NOT_USED(contact);
       B2_NOT_USED(impulse);
     }//!< Callbacks for derived classes for post collision
-
+    b2World* get_world(){return m_world;}
   //!How are protected members different from private memebers of a class in C++ ?
-  protected:
+  protected:	
 
     //! What are Friend classes?
     friend class contact_listener_t;//!< Declaration of friend class

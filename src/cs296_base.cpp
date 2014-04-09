@@ -68,11 +68,11 @@ class MyContactListener : public b2ContactListener
     {
       int a =*((int*)(&bodyAUserData));
       int b =*((int*)(&bodyBUserData));
-      if(a == 2 || b == 2){count1++;
-        if(a==2) del_list.push_back(contact->GetFixtureA()->GetBody());
+      if(a == 1 || b == 1){count1++;
+        if(a==1) del_list.push_back(contact->GetFixtureA()->GetBody());
         else del_list.push_back(contact->GetFixtureB()->GetBody());}
-        if(a == 3 || b == 3){count2++;
-          if(a==3) del_list.push_back(contact->GetFixtureA()->GetBody());
+        if(a == 1 || b == 1){count2++;
+          if(a==1) del_list.push_back(contact->GetFixtureA()->GetBody());
           else del_list.push_back(contact->GetFixtureB()->GetBody());}
         }
       }
@@ -87,7 +87,7 @@ class MyContactListener : public b2ContactListener
      b2Vec2 gravity;
      gravity.Set(0.0f, -10.0f);
      m_world = new b2World(gravity);
-	   m_world->SetContactListener(&myContactListenerInstance);
+     m_world->SetContactListener(&myContactListenerInstance);
      m_text_line = 30;
 
      m_point_count = 0;
@@ -106,12 +106,16 @@ class MyContactListener : public b2ContactListener
    base_sim_t::~base_sim_t()
    {
 	// By deleting the world, we delete the bomb, mouse joint, etc.
-     delete m_world;
-     m_world = NULL;
-   }
+    time_step_count =0;
+    count1=0;
+    count2=0;
+    del_list.clear();
+    delete m_world;
+    m_world = NULL;
+  }
 
-   void base_sim_t::pre_solve(b2Contact* contact, const b2Manifold* oldManifold)
-   {
+  void base_sim_t::pre_solve(b2Contact* contact, const b2Manifold* oldManifold)
+  {
     const b2Manifold* manifold = contact->GetManifold();
 
     b2Fixture* fixtureA = contact->GetFixtureA();
@@ -226,26 +230,22 @@ class MyContactListener : public b2ContactListener
   time_step_count++;
   while(!smoke_list.empty()) 
   {
-    time_step_count =0;
-    count1=0;
-    count2=0;
-    del_list.clear();
     if(smoke_list.front()->time_stamp +200 <= time_step_count){
       m_world->DestroyBody(smoke_list.front()->mybody);
       smoke_list.pop();}
       else break;
-    }
+  }
     {
      int numballs;
-     if(accl){numballs=3;accl=false;}
+     if(accl){numballs=5;accl=false;}
      else if(stop)numballs=0;
+     //else if(time_step_count%15 == 0)numballs=1;
      else numballs=0;
-
      for (int i = 0; i < numballs; i++) {
       float angle = (rand() % 361)/360.0 * 2 * 3.1416;
       b2Vec2 rayDir( sinf(angle), cosf(angle) );
       b2Vec2 center =engineBox->GetPosition()+b2Vec2(18*scale_e,-3 *scale_e);
-      int blastPower=10;
+      int blastPower=100;
       b2BodyDef bd;
       bd.type = b2_dynamicBody;
       bd.fixedRotation = true; // rotation not necessary
@@ -262,9 +262,9 @@ class MyContactListener : public b2ContactListener
       circleShape.m_radius = 0.05; // small radius is set
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 100000;  
+      fd.density = 1000;  
       fd.friction = 0; 
-      fd.restitution = 0.f; 
+      fd.restitution = 1.f; 
       fd.filter.groupIndex = -5; // particles should not collide with each other
       fd.filter.categoryBits = 0x0001; 
       body->CreateFixture( &fd );
@@ -273,7 +273,7 @@ class MyContactListener : public b2ContactListener
 
   for (unsigned int i=0;i<del_list.size();i++)
   {
-    if(del_list[i]->IsBullet())m_world->DestroyBody(del_list[i]);	
+    if(del_list[i]->IsBullet()){m_world->DestroyBody(del_list[i]);}	
   }
   del_list.clear();  
   

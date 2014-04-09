@@ -35,6 +35,7 @@
 #include <cstring>
 
 using namespace std;
+
 void debug_draw_t::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
 {
 	glColor3f(color.r, color.g, color.b);
@@ -73,7 +74,9 @@ void debug_draw_t::DrawCircle(const b2Vec2& center, float32 radius, const b2Colo
 	const float32 k_segments = 16.0f;
 	const float32 k_increment = 2.0f * b2_pi / k_segments;
 	float32 theta = 0.0f;
-	glColor3f(color.r, color.g, color.b);
+	//if (radius == 0.05)
+		glColor3f(0.5, 0.5, 0.5);
+	//else glColor3f(color.r, color.g, color.b);
 	glBegin(GL_LINE_LOOP);
 	for (int32 i = 0; i < k_segments; ++i)
 	{
