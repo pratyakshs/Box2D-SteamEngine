@@ -25,6 +25,7 @@ BINDIR = $(PROJECT_ROOT)/mybins
 DOCDIR = $(PROJECT_ROOT)/doc
 INSTALLDIR = $(PROJECT_ROOT)
 IMAGEDIR = $(PROJECT_ROOT)/images
+LATEX = cs296_report_project
 
 # Library Paths
 BOX2D_ROOT=$(EXTERNAL_ROOT)
@@ -63,7 +64,7 @@ OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 .PHONY: all setup doc clean distclean exe static dynamic exelib mylibs
 
-all:setup doc
+all:setup doc exe
 
 setup:
 	@$(ECHO) "Setting up compilation..."
@@ -108,7 +109,7 @@ doc:
 clean:
 	@$(ECHO) -n "Cleaning up..."
 	@$(RM) -rf $(BINDIR) $(LIBDIR) $(OBJDIR)
-	
+	@cd $(DOCDIR); rm -rf $(LATEX).aux $(LATEX).blg $(LATEX).pdf $(LATEX).toc $(LATEX).log $(LATEX).bbl 	
 
 distclean: clean
 	@$(RM) -rf $(BINDIR) $(DOCDIR)/html
@@ -117,7 +118,7 @@ distclean: clean
 	@$(RM) -rf $(EXTERNAL_ROOT)/include/Box2D
 
 dist: distclean
-	@cd ../../;tar cvzf cs296-g09-project.tar.gz cs296-g09-project 
+	@cd ../;tar cvzf cs296-g09-project.tar.gz g09_project README.txt
 
 install:exe
 	@cd $(INSTALLDIR);mkdir -p steam_engine;
@@ -125,3 +126,7 @@ install:exe
 	@cp -r $(DOCDIR) $(INSTALLDIR)/steam_engine
 	@cp -r $(IMAGEDIR) $(INSTALLDIR)/steam_engine
 	@make clean 
+
+report:
+	@cd $(DOCDIR); pdflatex $(LATEX).tex; bibtex $(LATEX); pdflatex $(LATEX).tex; pdflatex $(LATEX).tex; pdflatex $(LATEX).tex;
+

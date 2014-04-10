@@ -1,0 +1,53 @@
+<html><head><title>CS296 Project</title></head><body>
+<p>A steam locomotive is quite a complex machine and comes in a variety of designs. Various designs either differ in the driving wheel and driving rod mechanism (motion of wheels controlled by locomotive's pistons) or in the steam engine itself (which usually consists of a piston-cylinder arrangement coupled with valve rods). Box2D is a popular 2D physics simulator engine, a simulator of choice for games building upon physics. Here we have simulated a simple model of a steam locomotive in Box2D.</p>
+<h1>Introduction</h1>
+<p>A steam locomotive is a powered railway vehicle used for pulling trains. It uses an engine that uses the expansion or rapid condensation of steam to generate power. The classical steam engine consists of an iron cylinder, piston, connecting rod and beam or a crank and flywheel, and miscellaneous linkages. Steam is alternately supplied and exhausted by one or more valves.</p>
+<p>The engine requires a heat source which is usually burning coal and a boiler which uses this heat to boil water to produce steam. This steam is directed into a chamber of one or more pistons and valves. Also, a cold sink is onboard which condenses the produced steam after it is exhausted.</p>
+<p>For the current simulation we have omitted burning coal, the boiler and the cold sink part.</p>
+<h1>Original design proposal</h1>
+<p>Figure 1 shows the design of the locomotive as proposed earlier\cite{youtube1}. At first we tried to simulate exactly this model in Box2D, but things were not that simple.</p>
+<h2>Interesting observations</h2>
+<p>Both the driving rod-wheel mechanism and the steam engine are oversimplifications of a real steam locomotive and they lack many components essential in proper functioning of the machine.</p>
+<h3>Driving rod mechanism</h3>
+<p>The driving rod mechanism consists of two parts: rods connected to the piston rod and those connected to valve rod.</p>
+<p>Piston rod pushes rod2 which in turn pushes rod 1. Now rod1 is connected to all three wheels and its motion is constrained in such a manner that the wheels turn and the locomotive moves forward. This basic design of the piston rod part just works fine.</p>
+<p>The motion of rod1 should affect that of rod3 and rod4 in a manner such that valve rod is pushed to the right. We realize that only rod3 and rod4 are not sufficient to maintain the phase difference between piston and valve rods. A more complex system of rods is needed for the valve part to work.</p>
+<img src="../images/steameng.png" height="23%" />
+<h3>Engine</h3>
+<p>As can be seen in Figure 1, the position of exhaust is somewhat arbitrary. Also, one can't see how the exhaust connect to the chimney on the roof of the locomotive. This design requires that valve rod and piston rod be completely out of phase (when valve rod moves left, piston rod moves right and vice versa).</p>
+<img src="../images/oldlabel.png" height="60%" />
+<h1>The design implemented</h1>
+<p>Figure 3 shows the final design.\cite{model1}</p>
+<img src="../images/slnew.png" height="37%" />
+<h2>Observations</h2>
+<p>The design of both the engine part and the driving rod mechanism were modified such that the valve and exhaust systems function properly.</p>
+<h3>Driving rod mechanism</h3>
+<p>As can be seen, several rods are employed to control the motion of the valve. In total the combined motion of 8 rods controls the valve. Most of these have joints at the ends about which the connected bodies are free to rotate. Rest of the rods have one joint which welds them to the locomotive or to one of the wheels.</p>
+<img src="../images/labels.png" height="37%" />
+<p>The valve rod is connected near the top end of rod7 with a revolute joint. The motion of rod7 governs the motion of the valve rod. The motion of rod7 is in turn governed by the motion of rod3 and rod8 which are connected at the end points of rod7 with revolute joints.</p>
+<p>rod10 is a vertical rod which slides on two rails (parallel to the ground) that are fixed to the locomotives body. To ensure horizontal motion of rod10, a prismatic joint is created between the ground and rod10. The center of rod10 welds at its center rod9 and the piston rod. rod11 is also connected to the center of rod10 but by a revolute joint. In this way, the piston rod drives rods 10, 9 and 11. But rod11 is connected to the longRod, so the motion of the piston rod indirectly turns the wheels.</p>
+<p>The top ends of rod5 and rod4 are welded to the locomotive body. The bottom end of rod4 and top end of rod2 are also welded.</p>
+<p>Both ends of rod12 are welded to the middle wheel. rod1 connects bottom end of rod2 with top end of rod12 both with revolute joints.</p>
+<p>The lengths and positions of all the rods ensure that the piston rod and valve rod remain in phase for the duration of a cycle, and that the motion of piston rod turns the wheels in the clockwise direction.</p>
+<h3>Engine</h3>
+<p>The engine design\cite{youtube2} has changed considerably from the previous one. Refer Figure 5.</p>
+<img src="../images/enginelabels.png" height="37%" />
+<p>Two exhaust are placed at the top ends of the valve cylinder. The particles to be exhausted are directed from these to a chimney located above the valve cylinder.</p>
+<p>Particles are created at the inlet and are intialized with random direction and fixed speed. The particles travel through the engine interior. Particles collide with engine walls and impart momemtum to piston rod. Finally when the particles collide with the exhaust system, they get deleted. For every particle deleted, a new particle is created near the corresponding exhaust pipe and get released as smoke.</p>
+<h1>About the code</h1>
+<p>All bodies in the simulation are dynamic. The driving rod mechanism consists of several rods. All the rods have same shape, they differ only in their dimensions, positions and joints. The creation of these rods is facilated by C++ macros, which help make the code brief and neat.</p>
+<p>Particles are modelled as circles with small radius. Also the particles are set with user data 1 and are set as bullets.	Entire engine is implemted as one body with multiple fixtures. A custom contactListner class\cite{contactlistener} has been implemeted . The  begincontact function has been overridden so that it counts the number of particles that collide with a particular exhust. This function also pushes the particles to be deleted to a vector del\_list. The particles in the del\_list are then deleted in the Step()function. A custom data structure has been implemented to save the time of creation of bodies created near exhuast a. The smoke data structure has two fields b2Body* body and time\_stamp. Particles are then deleted from this queue after 200 steps. time\_step\_count maintains the number of times step function is called. The color of particles has also been changed to grey by changing the definition of DrawSolidCircle in render.cpp.</p>
+<h1>Timing</h1>
+<p>For the following analysis, we have used no. of iterations = 500 and no. of reruns = 10.</p>
+<h2>Analysis of Loop time vs No. of iterations</h2>
+<img src="../images/plot01.png" height="60%" />
+<p>The average step time almost remains constant. We obtain more accurate data as we take further iterations into account.</p>
+<p>The total loop time increases almost linearly. There are some ups and downs in the line graph which indicates that the solver is only invoked when it is needed. In some particular iteration, where more collisions occur (and/or more objects move) take longer time for solver to solve and hence there is some variation in the (almost) linear loop time.</p>
+<h2>Observations from graph of Step time, Collision time, Velocity time, Position time vs Iteration values</h2>
+<img src="../images/plot02.png" height="60%" />
+<p>Box2D uses constraint solver for solving constraints. The constraint solver solves all the constraints in the simulation, one at a time. Although single constraint can be solved perfectly, when we solve one constraint, we slightly disrupt other constraints. Therefore to get a good solution, we need to iterate over all constraints a number of times (in the same time step).</p>
+<p>This creates a trade-off between speed and accuracy. Using fewer iterations increases performance but accuracy suffers. Likewise, using more iterations decreases performance but improves the quality of your simulation. Since velocity iterations are more than position iterations, this acts as one of the factors in due to which time taken for velocity solving is more than that for position solving.</p>
+<h2>Observations from Step time average (error bars) vs No. of Iterations graph</h2>
+<img src="../images/plot03.png" height="60%" />
+<p>Note that the above plots represents average step time and y-error bars, the difference between the max and min values is large. Although the values are taken within 10 reruns, there are theses differences due to system processes. The errors decrease with increasing iteration count.</p>
+</body></html>
