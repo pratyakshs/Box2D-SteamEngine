@@ -137,7 +137,7 @@
 	 		circle.m_radius = wheelRadius;
 	 		b2FixtureDef fd;
 	 		fd.shape = &circle;
-	 		fd.density = 10.0;
+	 		fd.density = 1.0;
 	 		fd.friction = 10.0;
 	 		fd.filter.groupIndex = -1;
 	 		wheel1->CreateFixture(&fd);
@@ -183,7 +183,7 @@
 	 	 	
 	 	 	b2FixtureDef boxFixtureDef;
 	 	 	boxFixtureDef.shape = &boxShape;
-	 	 	boxFixtureDef.density = 10.0;
+	 	 	boxFixtureDef.density = 1.0;
 	 	 	boxFixtureDef.friction = 10;
 	 	 	boxFixtureDef.filter.groupIndex = -1;
 	 	 	smallRod1->CreateFixture(&boxFixtureDef);
@@ -196,7 +196,7 @@
 	 	 	circle.m_p.Set(-rodLength, 0);
 	 	 	b2FixtureDef circle_fix;
 	 	 	circle_fix.shape = &circle;
-	 	 	circle_fix.density = 5.0;
+	 	 	circle_fix.density = 1.0;
 	 	 	circle_fix.friction = 10;
 	 	 	circle_fix.filter.groupIndex = -1;
 
@@ -371,7 +371,7 @@
 	 		///This has groupIndex=-1in order to avoid collision with particles 
 
 	 	 	b2FixtureDef *fd1 = new b2FixtureDef;
-	 	 	fd1->density = 10.0;
+	 	 	fd1->density = 1.0;
 	 	 	fd1->friction = 0;
 	 	 	fd1->restitution = 1.f;
 	 	 	fd1->shape = new b2PolygonShape;
@@ -382,7 +382,7 @@
 	 		///Fixutre :<b>fd2</b> in valveRod\n
 	 		///fd2 is the fixture defination for left vertical box part of the valveRod
 	 	 	b2FixtureDef *fd2 = new b2FixtureDef;
-	 	 	fd2->density = 10.0;
+	 	 	fd2->density = 1.0;
 	 	 	fd2->friction = 0;
 	 	 	fd2->restitution = 1.f;
 	 	 	fd1->filter.groupIndex = -1;
@@ -395,7 +395,7 @@
 	 	 	///Fixutre :<b>fd3</b> in valveRod\n
 	 		///fd3 is the fixture defination for right vertical part of the valveRod
 	 	 	b2FixtureDef *fd3 = new b2FixtureDef;
-	 	 	fd3->density = 10.0;
+	 	 	fd3->density = 1.0;
 	 	 	fd3->friction = 0;
 	 	 	fd3->restitution = 1.f;
 	 	 	fd3->shape = new b2PolygonShape;
@@ -408,7 +408,7 @@
 	 		///This has groupIndex=-1 & maskBits set to some arbitrary number in 
 	 		///order to avoid collision with particles and engine parts with which it overlaps
 	 	 	b2FixtureDef *fd4 = new b2FixtureDef;
-	 	 	fd4->density = 10.0;
+	 	 	fd4->density = 1.0;
 	 	 	fd4->friction = 0;
 	 	 	fd4->restitution = 1.f;
 	 	 	fd4->filter.groupIndex = -1;
@@ -447,7 +447,7 @@
 	 	 	///Fixutre :<b>fd1</b> in piston\n
 	 		///fd1 is the fixture defination for vertical Box part of the piston
 	 	 	b2FixtureDef *fd1 = new b2FixtureDef;
-	 	 	fd1->density = 10;
+	 	 	fd1->density = 1;
 	 	 	fd1->friction = 0.0;
 	 	 	fd1->restitution = 1.f;
 	 	 	fd1->shape = new b2PolygonShape;
@@ -461,7 +461,7 @@
 	 		///order to avoid collision with particles and engine parts with which it overlaps
 
 	 	 	b2FixtureDef *fd2 = new b2FixtureDef;
-	 	 	fd2->density = 10;
+	 	 	fd2->density = 1;
 	 	 	fd2->friction = 0.0;
 	 	 	fd2->restitution = 1.f; 
 	 	 	fd2->shape = new b2PolygonShape;
@@ -500,7 +500,7 @@
 	 	 	///Fixutre :<b>fd1</b> in engineBox\n
 	 	 	///This fixture corresponds to main trainBox
 	 	 	b2FixtureDef *fd1 = new b2FixtureDef;
-	 	 	fd1->density = 10;
+	 	 	fd1->density = 1;
 	 	 	fd1->friction = 0.0;
 	 	 	fd1->restitution = 1.f;
 	 	 	fd1->shape = new b2PolygonShape;
@@ -514,7 +514,7 @@
 	 	 	///Fixutre :<b>fd2</b> in engineBox\n
 	 	 	///This fixture corresponds to bottom part of engineBody
 	 	 	b2FixtureDef *fd2 = new b2FixtureDef;
-	 	 	fd2->density = 10;
+	 	 	fd2->density = 1;
 	 	 	fd2->friction = 0.0;
 	 	 	fd2->restitution = 1.f; 
 	 	 	fd2->shape = new b2PolygonShape;
@@ -525,23 +525,23 @@
 	 	 	
 	 	 	///Fixutre :<b>fd3</b> in engineBox\n
 	 	 	///This fixture corresponds to vertical body which is located at bottom right of engineBody
-	 	 	fd3->density = 10;
+	 	 	fd3->density = 1;
 	 	 	fd3->friction = 0.0;
 	 	 	fd3->restitution = 1.f; 
 	 	 	fd3->shape = new b2PolygonShape;
 	 	 	b2PolygonShape bs3;
-	 	 	bs3.SetAsBox(0.4*scale_e,1.5*scale_e, b2Vec2(20.6f*scale_e,-6.5f*scale_e), 0);
+	 	 	bs3.SetAsBox(0.4*scale_e,1.6*scale_e, b2Vec2(20.6f*scale_e,-6.6f*scale_e), 0);
 	 	 	fd3->shape = &bs3;
 	 	 	b2FixtureDef *fd4 = new b2FixtureDef;
 	 	 	
 	 	 	///Fixutre :<b>fd4</b> in engineBox\n
 	 	 	///This fixture corresponds to vertical body which is located at bottom left of engineBody
-	 	 	fd4->density = 10;
+	 	 	fd4->density = 1;
 	 	 	fd4->friction = 0.0;
 	 	 	fd4->restitution = 1.f; 
 	 	 	fd4->shape = new b2PolygonShape;
 	 	 	b2PolygonShape bs4;
-	 	 	bs4.SetAsBox(0.4*scale_e,1.5*scale_e, b2Vec2(15.6f*scale_e,-6.5f*scale_e), 0);
+	 	 	bs4.SetAsBox(0.4*scale_e,1.6*scale_e, b2Vec2(15.6f*scale_e,-6.6f*scale_e), 0);
 	 	 	fd4->shape = &bs4;
 	 	 	fd4->filter.groupIndex = -1;
 	 	 	fd4->filter.maskBits = 0x0001;
@@ -549,7 +549,7 @@
 	 	 	
 	 	 	///Fixutre :<b>fd5</b> in engineBox\n
 	 	 	///This fixture corresponds to vertical body which is located at  top left of engineBody
-	 	 	fd5->density = 10;
+	 	 	fd5->density = 1;
 	 	 	fd5->friction = 0.0;
 	 	 	fd5->restitution = 1.f;
 	 	 	fd5->filter.groupIndex = -1;
@@ -562,7 +562,7 @@
 	 	 	
 	 	 	///Fixutre :<b>fd6</b> in engineBox\n
 	 	 	///This fixture corresponds to vertical body which is located at  top right of engineBody
-	 	 	fd6->density = 10;
+	 	 	fd6->density = 1;
 	 	 	fd6->friction = 0.0;
 	 	 	fd6->restitution = 1.f; 
 	 	 	fd6->shape = new b2PolygonShape;
@@ -573,7 +573,7 @@
 	 	 	///Fixutre :<b>fd7</b> in engineBox\n
 	 	 	///This fixture corresponds to horizontal body which is located at  top left of engineBody
 	 	 	b2FixtureDef *fd7 = new b2FixtureDef;
-	 	 	fd7->density = 10;
+	 	 	fd7->density = 1;
 	 	 	fd7->friction = 0.0;
 	 	 	fd7->restitution = 1.f; 
 	 	 	fd7->shape = new b2PolygonShape;
@@ -584,18 +584,44 @@
 	 	 	///Fixutre :<b>fd8</b> in engineBox\n
 	 	 	///This fixture corresponds to horizontal body which is located at  top right of engineBody
 	 	 	b2FixtureDef *fd8 = new b2FixtureDef;
-	 	 	fd8->density = 10;
+	 	 	fd8->density = 1;
 	 	 	fd8->friction = 0.0;
 	 	 	fd8->restitution = 1.f; 
 	 	 	fd8->shape = new b2PolygonShape;
 	 	 	b2PolygonShape bs8;
 	 	 	bs8.SetAsBox(1.25*scale_e,0.2*scale_e, b2Vec2(19.75f*scale_e,-2.8f*scale_e), 0);
 	 	 	fd8->shape = &bs8;
-	 	 	
+
+	 	 	///Fixutre :<b>fd14</b> in engineBox\n
+	 	 	///This fixture corresponds to horizontal body which looks like rails located on\n
+	 	 	///part of engine.fd14 denotes top rail
+	 	 	b2FixtureDef *fd14 = new b2FixtureDef;
+	 	 	fd14->density = 1;
+	 	 	fd14->friction = 0.0;
+	 	 	fd14->restitution = 1.f;
+	 	 	fd14->filter.groupIndex =-1; 
+	 	 	fd14->shape = new b2PolygonShape;
+	 	 	b2PolygonShape bs14;
+	 	 	bs14.SetAsBox(3.2*scale_e,0.1*scale_e, b2Vec2(12.f*scale_e,-6.7f*scale_e+1.8), 0);
+	 	 	fd14->shape = &bs14;
+
+	 	
+	 		///Fixutre :<b>fd15</b> in engineBox\n
+	 	 	///This fixture corresponds to horizontal body which looks like rails located on\n
+	 	 	///part of engine.fd15 denotes bottom rail
+	 	 	b2FixtureDef *fd15 = new b2FixtureDef;
+	 	 	fd15->density = 1;
+	 	 	fd15->friction = 0.0;
+	 	 	fd15->restitution = 1.f; 
+	 	 	fd15->shape = new b2PolygonShape;
+	 	 	b2PolygonShape bs15;
+	 	 	bs15.SetAsBox(3.2*scale_e,0.1*scale_e, b2Vec2(12.f*scale_e,-6.7f*scale_e-1.8), 0);
+	 	 	fd15->shape = &bs15;
+ 			fd15->filter.groupIndex =-1;
 	 	 	///Fixutre :<b>fd9</b> in engineBox\n
 	 	 	///This fixture corresponds to horizontal body which is located at center of engineBody
 	 	 	b2FixtureDef *fd9 = new b2FixtureDef;
-	 	 	fd9->density = 10;
+	 	 	fd9->density = 1;
 	 	 	fd9->friction = 0.0;
 	 	 	fd9->restitution = 1.f; 
 	 	 	fd9->shape = new b2PolygonShape;
@@ -618,7 +644,7 @@
 	 	 	b2ChainShape chain4;
 	 	 	chain4.CreateChain(v4, 4);
 	 	 	b2FixtureDef *fd10 = new b2FixtureDef;
-	 	 	fd10->density = 10;
+	 	 	fd10->density = 1;
 	 	 	fd10->friction = 0.0;
 	 	 	fd10->restitution = 1.f;
 	 	 	fd10->shape=new b2ChainShape;
@@ -634,7 +660,7 @@
 	 	 	b2ChainShape chain3;
 	 	 	chain3.CreateChain(v3, 4);
 	 	 	b2FixtureDef *fd11 = new b2FixtureDef;
-	 	 	fd11->density = 10;
+	 	 	fd11->density = 1;
 	 	 	fd11->friction = 0.0;
 	 	 	fd11->restitution = 1.f;
 	 	 	fd11->shape=&chain3;
@@ -649,7 +675,7 @@
 	 	 	b2ChainShape chain5;
 	 	 	chain5.CreateChain(v5, 4);
 	 	 	b2FixtureDef *fd13 = new b2FixtureDef;
-	 	 	fd13->density = 10;
+	 	 	fd13->density = 1;
 	 	 	fd13->friction = 0.0;
 	 	 	fd13->restitution = 1.f;
 	 	 	fd13->shape=&chain5;
@@ -664,7 +690,7 @@
 	 	 	b2ChainShape chain2;
 	 	 	chain2.CreateChain(v2, 5);
 	 	 	b2FixtureDef *fd12 = new b2FixtureDef;
-	 	 	fd12->density = 10;
+	 	 	fd12->density = 1;
 	 	 	fd12->friction = 0.0;
 	 	 	fd12->restitution = 1.f;
 	 	 	fd12->shape=&chain2;
@@ -683,6 +709,8 @@
 	 	 	engineBox->CreateFixture(fd11);
 	 	 	engineBox->CreateFixture(fd12);
 	 	 	engineBox->CreateFixture(fd13);
+	 	 	engineBox->CreateFixture(fd14);
+	 	 	engineBox->CreateFixture(fd15);
 	 	 }
 	 	 /// <b>Revoulte</b> joints between EngineBox and wheels
 	 	 ///1)The revolutejoint between engineBox and wheel1
@@ -726,11 +754,11 @@
 	 	 	b2CircleShape ext_entry;
 	 	 	ext_entry.m_radius = 0.2*scale_e;
 	 	 	b2FixtureDef *fd7 = new b2FixtureDef;
-	 	 	fd7->shape = new b2CircleShape;
+	 	 	fd7->shape = new b2CircleShape;	
 	 	 	fd7->shape=&ext_entry;
 	 	 	fd7->restitution = 1.f;
 	 	 	fd7->friction = 1;
-	 	 	fd7->density = 10.0f;
+	 	 	fd7->density = 1.0f;
 	 	 	exhaustbd.type = b2_dynamicBody;
 	 	 	ext1 = m_world->CreateBody(&exhaustbd);
 	 	 	ext1->CreateFixture(fd7);
@@ -762,7 +790,7 @@
 	 	 	fd7->shape=&ext_entry;
 	 	 	fd7->restitution = 1.f;
 	 	 	fd7->friction = 1;
-	 	 	fd7->density = 10.0f;
+	 	 	fd7->density = 1.0f;
 	 	 	exhaustbd.type = b2_dynamicBody;
 	 	 	ext2 = m_world->CreateBody(&exhaustbd);
 	 	 	ext2->CreateFixture(fd7);

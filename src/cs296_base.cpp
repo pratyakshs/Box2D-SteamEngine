@@ -262,7 +262,7 @@ class MyContactListener : public b2ContactListener
       circleShape.m_radius = 0.05; // small radius is set
       b2FixtureDef fd;
       fd.shape = &circleShape;
-      fd.density = 1000;  
+      fd.density = 500;  
       fd.friction = 0; 
       fd.restitution = 1.f; 
       fd.filter.groupIndex = -5; // particles should not collide with each other

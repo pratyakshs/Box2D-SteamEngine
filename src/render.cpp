@@ -75,8 +75,9 @@ void debug_draw_t::DrawCircle(const b2Vec2& center, float32 radius, const b2Colo
 	const float32 k_increment = 2.0f * b2_pi / k_segments;
 	float32 theta = 0.0f;
 	//if (radius == 0.05)
-		glColor3f(0.5, 0.5, 0.5);
-	//else glColor3f(color.r, color.g, color.b);
+		//glColor3f(0.5, 0.5, 0.5);
+	//else 
+	glColor3f(color.r, color.g, color.b);
 	glBegin(GL_LINE_LOOP);
 	for (int32 i = 0; i < k_segments; ++i)
 	{
@@ -94,7 +95,8 @@ void debug_draw_t::DrawSolidCircle(const b2Vec2& center, float32 radius, const b
 	float32 theta = 0.0f;
 	glEnable(GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f);
+	if(radius == 0.05) glColor4f(0.25,0.25,0.25,0.5);
+	else glColor4f(0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f);
 	glBegin(GL_TRIANGLE_FAN);
 	for (int32 i = 0; i < k_segments; ++i)
 	{
@@ -106,7 +108,8 @@ void debug_draw_t::DrawSolidCircle(const b2Vec2& center, float32 radius, const b
 	glDisable(GL_BLEND);
 
 	theta = 0.0f;
-	glColor4f(color.r, color.g, color.b, 1.0f);
+	if(radius == 0.05f) glColor4f(0.5,0.5,0.5,1);	
+	else glColor4f(color.r,color.g,color.b, 1.f);
 	glBegin(GL_LINE_LOOP);
 	for (int32 i = 0; i < k_segments; ++i)
 	{
