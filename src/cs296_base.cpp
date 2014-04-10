@@ -238,7 +238,7 @@ class MyContactListener : public b2ContactListener
     {
      int numballs;
      if(accl){numballs=5;accl=false;}
-     else if(stop)numballs=0;
+     //else if(stop)numballs=0;
      //else if(time_step_count%15 == 0)numballs=1;
      else numballs=0;
      for (int i = 0; i < numballs; i++) {

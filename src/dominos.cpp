@@ -39,15 +39,14 @@
 #include "dominos.hpp"
 
 #include <math.h>
-/// The basic conversion for Degree to Radians
-#define DEGTORAD 0.0174532925199432957f
-/// The basic conversion for Radians  to Degree 
-#define RADTODEG 57.295779513082320876f
+
 /// Constant PI
 #define PI 3.14159
-/// Absolute value function
+
+/// Utility funtion for absolute value.
 #define abs(x) ((x) > 0)? (x) : -(x)
-/// Add circles to end of rod . called inside createRod
+
+/// Macro which adds two circles at both the ends a b2Body* variable <b>'obj'</b>. Mainly used to add circles at the ends of various rods.
 #define addCircles(obj) circle.m_radius = outerRadius;circle.m_p.Set(-rodLength, 0);\
  (obj)->CreateFixture(&circle_fix);\
  circle.m_radius = innerRadius;\
@@ -56,7 +55,8 @@
  (obj)->CreateFixture(&circle_fix);\
  circle.m_radius = outerRadius;\
  (obj)->CreateFixture(&circle_fix)
-///This creates Rod object with lx is length along x-axis,ly along y-axis , and total length of rod
+
+/// Passing a b2Body* variable <b>'obj'</b> makes it a rod. lx is length along x-axis,ly along y-axis. The total length of rod is stored in the variable passed as <b>'len'</b>
 #define createRod(obj, len, lx, ly) float x = (lx), y = (ly), theta = atan(y/x);\
  if(x<0 && y>0) theta = PI-abs(theta);\
  else if(x<0 && y<0) theta = PI+theta;\
@@ -66,32 +66,38 @@
  boxShape.SetAsBox(rodLength,srThickness);\
  (obj)->CreateFixture(&boxFixtureDef);\
  addCircles((obj))
+
 ///The conversion from polar to cartesian
 #define polar(r, theta) b2Vec2((r)*cos(theta), (r)*sin(theta))
-/// origin of map
+
+/// Defines the origin of coordinates
  b2Vec2 origin(0,0);
+
 /// The accleration variable 
  bool accl=false;
-/// The s
+
+/// Boolean for stop
  bool stop=false;
+
  /// The scale of engine
  float scale_e=2/1.1;
+
  /// The main engineBox,
- b2Body* engineBox;	
+b2Body* engineBox;	
  namespace cs296
  {
 
-	/**  The is the constructor for dominos 
+	/** dominos_t() This is the constructor for dominos <hr>
 	 */ 
 
  	dominos_t::dominos_t()
  	{
 
-	 	/// The gorund body 
+	 	/// The ground body
  		b2Body* b1;
-	 	/*! b2Body* b1 : This is <b>GROUND</b> body \n
+	 	/*! b2Body* b1 : This is <b>GROUND</b> body <hr> 
 	 	*/
-	 	/*! <b>GLBAL VARIABLES</b>
+	 	/*! <b>GLOBAL VARIABLES: </b>
 	 		xpos_e = x-position of engine \n
 	 		ypos_e = y-position of engine \n
 	 		scale_e = scale of engine \n
@@ -99,35 +105,36 @@
 	 		xpos_p,ypos_p , scale_p correspond to pistonRod \n
 	 		scale_p is the scale for all scales
 	 	*/
-	 		float xpos,ypos,scale,xpos_e,ypos_e,scale_p = 1.1;
-	 		scale_e = 2/scale_p;
-	 	xpos_e = 12.6 - (-0) ;//(2.1*wheelRadius)
+	 	float xpos,ypos,scale,xpos_e,ypos_e,scale_p = 1.1;
+	 	scale_e = 2/scale_p;
+	 	//2.1*wheelRadius
+	 	xpos_e = 12.6;
 	 	ypos_e = 20 - 1.8;
 	 	xpos=xpos_e+18*scale_e;
 	 	ypos=ypos_e-4*scale_e;	
 	 	scale = 1.49/scale_p;
 	 	float xpos_p=xpos_e+ 18*scale_e;
 	 	float ypos_p=ypos_e-6.7*scale_e;
-	 	//The defination for ground.
+	 	///b2Body* b1: Variable for ground. Its shape is a box of length 1800*2 and height 0.01*2 <hr>
 	 	{
 
 	 		b2PolygonShape shape; 
-	 		shape.SetAsBox(180, 0.01);
+	 		shape.SetAsBox(1800, 0.01);
 	 		b2BodyDef bd; 
 	 		b1 = m_world->CreateBody(&bd); 
-	 		bd.position.Set(0, -0.0000000001);
+	 		bd.position.Set(0, -0.01);
 	 		b2FixtureDef groundFixture;
 	 		groundFixture.shape = &shape;
 	 		groundFixture.friction = 10.0;
 	 		groundFixture.density = 10000.0;
 	 		b1->CreateFixture(&groundFixture);
 	 	}
-	 	/// b2body* wheel1,wheel2,wheel3 
-	 	///The three wheels for the engine. \n
-	 	/// The wheels have radius 6 units each\n
+	 	/// b2body* wheel1,wheel2,wheel3:  
+	 	///	The three wheels for the engine. \n
+	 	/// The wheels have radius 6 units each <hr>
 	 	b2Body *wheel1, *wheel2, *wheel3;
 	 	float wheelRadius = 6;
-	 	// The definations for three wheels of the train
+	 	// The definitions for three wheels of the train
 	 	{
 	 		b2BodyDef bd;
 	 		bd.type = b2_dynamicBody;
@@ -153,22 +160,25 @@
 	 		// wheel2->SetAngularVelocity(-15);
 	 		// wheel1->SetAngularVelocity(-15);
 	 	}
+
 	 	/** All the bodies used in simulation are declared here
 	 	 small rods the rods connecting the center of wheels to longrod which connects all the three wheels
-	 	 dRod is the rod which the 3 wheel system to piston
-	 	 msRod is rod which is welded to center wheel
+	 	 rod11 is the rod which the 3 wheel system to piston
+	 	 rod12 is rod which is welded to center wheel
 	 	 ext1 and ext2 are two exhaust bodies 
 	 	 piston is the pistonrod of the engine
 	 	 valveRod is the valveRod of the engine
 	 	 write here about rod1-rod10
 	 	*/
-	 	 b2Body *smallRod1, *smallRod2, *smallRod3, *longRod, *dRod, *msRod, *rod1, *rod2, *rod3, *rod4, *rod5,*rod7, *rod8, *rod9, *rod10, *valveRod,	*ext1,*ext2,*piston;
-	 	/// The lenght of long rod
-	 	 float lrLength = (wheel3->GetPosition() - wheel1->GetPosition()).x/2, msrLength, drLength, length1, length2, length3, length4, length5,length7, length8, length9, length10;
-	 	/// The defination for all the bodies connecting the wheels and joints
+
+	 	 /// *smallRod1, *smallRod2, *smallRod3, *longRod, *rod11, *rod12, *rod1, *rod2, *rod3, *rod4, *rod5,*rod7, *rod8, *rod9, *rod10, *rod11, *rod12: b2Body* variables for various rods <hr>
+	 	 b2Body *smallRod1, *smallRod2, *smallRod3, *longRod, *rod11, *rod12, *rod1, *rod2, *rod3, *rod4, *rod5,*rod7, *rod8, *rod9, *rod10, *valveRod,	*ext1,*ext2,*piston;
+	 	/// float lrLength: The lenghth of long rod
+	 	 float lrLength = (wheel3->GetPosition() - wheel1->GetPosition()).x/2, length12, length11, length1, length2, length3, length4, length5,length7, length8, length9, length10;
+	 	/// The definition for all the bodies connecting the wheels and joints
 	 	 {
 	 	 	float rodLength = 1.25, outerRadius = 0.6, innerRadius = 0.3, srThickness = 0.3;
-	 		///The definations for three smallrods
+	 		///The definitions for three smallrods
 	 	 		b2BodyDef myBodyDef;
 	 	 	myBodyDef.type = b2_dynamicBody;
 	 	 	myBodyDef.angle = -PI/2;
@@ -210,7 +220,7 @@
 	 	 	smallRod2->SetTransform(wheel2->GetPosition() - b2Vec2(0, rodLength), -PI/2);
 	 	 	smallRod3->SetTransform(wheel3->GetPosition() - b2Vec2(0, rodLength), -PI/2);
 
-	 		///The joint definations between smallRods and corresponding wheels
+	 		///The joint definitions between smallRods and corresponding wheels
 	 	 	b2WeldJointDef jointDef;
 	 	 	jointDef.Initialize(wheel1, smallRod1, wheel1->GetWorldCenter());
 	 	 	(b2WeldJoint*)m_world->CreateJoint(&jointDef);
@@ -218,9 +228,9 @@
 	 	 	(b2WeldJoint*)m_world->CreateJoint(&jointDef);
 	 	 	jointDef.Initialize(wheel3, smallRod3, wheel3->GetWorldCenter());
 	 	 	(b2WeldJoint*)m_world->CreateJoint(&jointDef);
-	 		///The definations of longrod and the joints of longrod is declared here
+	 		///The definitions of longrod and the joints of longrod is declared here
 	 	 	{
-	 			///The defination of longRod
+	 			///The definition of longRod
 	 	 		myBodyDef.angle = 0; rodLength = lrLength;
 	 	 		longRod = m_world->CreateBody(&myBodyDef);
 	 	 		boxShape.SetAsBox(lrLength,srThickness);
@@ -231,7 +241,7 @@
 	 	 		circle.m_radius = innerRadius;
 	 	 		longRod->CreateFixture(&circle_fix);	
 	 	 		longRod->SetTransform(wheel2->GetPosition() - b2Vec2(0, 2.5), 0);
-	 			///The defination of joints for longrod and smallRods
+	 			///The definition of joints for longrod and smallRods <hr>
 	 	 		b2RevoluteJointDef jointDef;
 	 	 		jointDef.Initialize(longRod, smallRod1, longRod->GetWorldCenter() - b2Vec2(lrLength, 0));
 	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
@@ -241,31 +251,33 @@
 	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
-
+	 	 	/// Various rods are created with the required dimensions by calling the createRod() macro. \n
+	 	 	/// After creating the rod, it's position is shifted to the appropriate position by using the SetTransform() function \n
+	 	 	/// Then various joints are created for the rod (if any). <hr>
 	 	 	{
-	 	 		createRod(dRod, drLength, 18.2, 2.5);
+	 	 		createRod(rod11, length11, 18.2, 2.5);
 	 	 		b2Vec2 pos = longRod->GetPosition()+polar(rodLength, atan(2.5/18.2));
-	 	 		dRod->SetTransform(pos, theta);
+	 	 		rod11->SetTransform(pos, theta);
 	 	 		b2RevoluteJointDef jointDef;
-	 	 		jointDef.Initialize(longRod, dRod, longRod->GetWorldCenter()); 
+	 	 		jointDef.Initialize(longRod, rod11, longRod->GetWorldCenter()); 
 	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
-	 	 		createRod(msRod, msrLength, 2, 2.7);
+	 	 		createRod(rod12, length12, 2, 2.7);
 	 	 		b2Vec2 pos = longRod->GetPosition()+polar(rodLength, atan(2.7/2));
-	 	 		msRod->SetTransform(pos, theta);
+	 	 		rod12->SetTransform(pos, theta);
 	 	 		b2WeldJointDef jointDef;
-	 	 		jointDef.Initialize(wheel2, msRod, longRod->GetWorldCenter());
+	 	 		jointDef.Initialize(wheel2, rod12, longRod->GetWorldCenter());
 	 	 		(b2WeldJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
 	 	 	{
 	 	 		createRod(rod1, length1, 10.3, 0.4);
-	 	 		b2Vec2 pos = msRod->GetPosition()+polar(msrLength, msRod->GetAngle())+polar(rodLength, atan(0.4/10.3));
+	 	 		b2Vec2 pos = rod12->GetPosition()+polar(length12, rod12->GetAngle())+polar(rodLength, atan(0.4/10.3));
 	 	 		rod1->SetTransform(pos, theta);
 	 	 		b2RevoluteJointDef jointDef;
-	 	 		jointDef.Initialize(msRod, rod1, msRod->GetWorldCenter()+b2Vec2(msrLength*cos(msRod->GetAngle()), msrLength*sin(msRod->GetAngle())));
+	 	 		jointDef.Initialize(rod12, rod1, rod12->GetWorldCenter()+b2Vec2(length12*cos(rod12->GetAngle()), length12*sin(rod12->GetAngle())));
 	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	 	 	}
 
@@ -346,7 +358,7 @@
 	 	 		rod10->SetTransform(pos, theta);
 
 	 	 		b2RevoluteJointDef jointDef;
-	 	 		jointDef.Initialize(rod10, dRod, rod10->GetWorldCenter());
+	 	 		jointDef.Initialize(rod10, rod11, rod10->GetWorldCenter());
 	 	 		(b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 
 	 	 		b2PrismaticJointDef jointDef2;
@@ -359,7 +371,7 @@
 	 	 	}
 	 	 }
 ////////////////////////////////////////////////////////////////////////////
-	 	///The defination of <b>vavleRod</b>
+	 	///The definition of <b>vavleRod</b> <hr>
 	 	 {
 	 	 	float scale_v = 1.70/scale_p;
 	 	 	b2BodyDef *bd = new b2BodyDef;
@@ -380,7 +392,7 @@
 	 	 	fd1->shape = &bs1;
 
 	 		///Fixutre :<b>fd2</b> in valveRod\n
-	 		///fd2 is the fixture defination for left vertical box part of the valveRod
+	 		///fd2 is the fixture definition for left vertical box part of the valveRod
 	 	 	b2FixtureDef *fd2 = new b2FixtureDef;
 	 	 	fd2->density = 1.0;
 	 	 	fd2->friction = 0;
@@ -393,7 +405,7 @@
 	 	 	fd2->shape = &bs2;
 
 	 	 	///Fixutre :<b>fd3</b> in valveRod\n
-	 		///fd3 is the fixture defination for right vertical part of the valveRod
+	 		///fd3 is the fixture definition for right vertical part of the valveRod
 	 	 	b2FixtureDef *fd3 = new b2FixtureDef;
 	 	 	fd3->density = 1.0;
 	 	 	fd3->friction = 0;
@@ -404,7 +416,7 @@
 	 	 	fd3->shape = &bs3;
 
 	 	 	///Fixutre :<b>fd4</b> in valveRod\n
-	 		///fd4 is the fixture defination for left horizontal rod of valveRod which connects to 3-wheel system
+	 		///fd4 is the fixture definition for left horizontal rod of valveRod which connects to 3-wheel system
 	 		///This has groupIndex=-1 & maskBits set to some arbitrary number in 
 	 		///order to avoid collision with particles and engine parts with which it overlaps
 	 	 	b2FixtureDef *fd4 = new b2FixtureDef;
@@ -425,7 +437,7 @@
 	 	 	valveRod->CreateFixture(fd3);
 	 	 	valveRod->CreateFixture(fd4);
 	 	 }
-	 	/// 		The <b>primatic joint<\b> between ground and valveRod
+	 	/// 		The <b>primatic joint</b> between ground and valveRod
 	 	 {
 	 	 	b2PrismaticJointDef prismaticJointDef;
 	 	 	prismaticJointDef.bodyA = b1;
@@ -438,14 +450,14 @@
 
 	 	 	(b2PrismaticJoint*)m_world->CreateJoint( &prismaticJointDef );
 	 	 }
-	 	///The defination for <b>piston<\b>
+	 	///The definition for <b>piston</b>
 	 	 {
 	 	 	b2BodyDef *bd = new b2BodyDef;
 	 	 	bd->type = b2_dynamicBody;
 	 	 	bd->position.Set(xpos_p,ypos_p);
 	 	 	bd->fixedRotation = true;
 	 	 	///Fixutre :<b>fd1</b> in piston\n
-	 		///fd1 is the fixture defination for vertical Box part of the piston
+	 		///fd1 is the fixture definition for vertical Box part of the piston
 	 	 	b2FixtureDef *fd1 = new b2FixtureDef;
 	 	 	fd1->density = 1;
 	 	 	fd1->friction = 0.0;
@@ -456,7 +468,7 @@
 	 	 	fd1->shape = &bs1;
 
 	 	 	///Fixutre :<b>fd2</b> in piston\n
-	 		///fd2 is the fixture defination for horizontal rod of pistonRod which connects to 3-wheel system
+	 		///fd2 is the fixture definition for horizontal rod of pistonRod which connects to 3-wheel system
 	 		///This has groupIndex=-1 & maskBits set to some arbitrary number in 
 	 		///order to avoid collision with particles and engine parts with which it overlaps
 
@@ -477,7 +489,7 @@
 	 	 	piston->CreateFixture(fd2);
 	 	 }
 
-	 	///		<b>prismatic joint<\b> between piston and ground
+	 	///		<b>prismatic joint</b> between piston and ground
 	 	 {
 	 	 	b2PrismaticJointDef prismaticJointDef;
 	 	 	prismaticJointDef.bodyA = b1;
@@ -490,7 +502,7 @@
 
 	 	 	(b2PrismaticJoint*)m_world->CreateJoint( &prismaticJointDef );
 	 	 }
-	 	 ///The defination for engineBody
+	 	 ///The definition for engineBody
 	 	 {
 	 	 	b2BodyDef *bd = new b2BodyDef;
 	 	 	bd->type = b2_dynamicBody;
@@ -592,32 +604,6 @@
 	 	 	bs8.SetAsBox(1.25*scale_e,0.2*scale_e, b2Vec2(19.75f*scale_e,-2.8f*scale_e), 0);
 	 	 	fd8->shape = &bs8;
 
-	 	 	///Fixutre :<b>fd14</b> in engineBox\n
-	 	 	///This fixture corresponds to horizontal body which looks like rails located on\n
-	 	 	///part of engine.fd14 denotes top rail
-	 	 	b2FixtureDef *fd14 = new b2FixtureDef;
-	 	 	fd14->density = 1;
-	 	 	fd14->friction = 0.0;
-	 	 	fd14->restitution = 1.f;
-	 	 	fd14->filter.groupIndex =-1; 
-	 	 	fd14->shape = new b2PolygonShape;
-	 	 	b2PolygonShape bs14;
-	 	 	bs14.SetAsBox(3.2*scale_e,0.1*scale_e, b2Vec2(12.f*scale_e,-6.7f*scale_e+1.8), 0);
-	 	 	fd14->shape = &bs14;
-
-	 	
-	 		///Fixutre :<b>fd15</b> in engineBox\n
-	 	 	///This fixture corresponds to horizontal body which looks like rails located on\n
-	 	 	///part of engine.fd15 denotes bottom rail
-	 	 	b2FixtureDef *fd15 = new b2FixtureDef;
-	 	 	fd15->density = 1;
-	 	 	fd15->friction = 0.0;
-	 	 	fd15->restitution = 1.f; 
-	 	 	fd15->shape = new b2PolygonShape;
-	 	 	b2PolygonShape bs15;
-	 	 	bs15.SetAsBox(3.2*scale_e,0.1*scale_e, b2Vec2(12.f*scale_e,-6.7f*scale_e-1.8), 0);
-	 	 	fd15->shape = &bs15;
- 			fd15->filter.groupIndex =-1;
 	 	 	///Fixutre :<b>fd9</b> in engineBox\n
 	 	 	///This fixture corresponds to horizontal body which is located at center of engineBody
 	 	 	b2FixtureDef *fd9 = new b2FixtureDef;
@@ -666,20 +652,7 @@
 	 	 	fd11->shape=&chain3;
 
 	 	 	///Fixutre :<b>fd12</b> in engineBox\n
-	 	 	///This fixture corresponds to chain on center of engineBody
-	 	 	b2Vec2 v5[4];
-	 	 	v5[3].Set(18.5*scale_e,-3*scale_e);
-	 	 	v5[2].Set(18.5	*scale_e,-2*scale_e);
-	 	 	v5[1].Set(17.5*scale_e,-2*scale_e);
-	 	 	v5[0].Set(17.5*scale_e,-3*scale_e);
-	 	 	b2ChainShape chain5;
-	 	 	chain5.CreateChain(v5, 4);
-	 	 	b2FixtureDef *fd13 = new b2FixtureDef;
-	 	 	fd13->density = 1;
-	 	 	fd13->friction = 0.0;
-	 	 	fd13->restitution = 1.f;
-	 	 	fd13->shape=&chain5;
-
+	 	 	///This fixture corresponds to chain on center that is part exhuast system of engineBody
 
 			b2Vec2 v2[5];
 	 	 	v2[4].Set(20.6*scale_e,-3*scale_e);
@@ -695,6 +668,47 @@
 	 	 	fd12->restitution = 1.f;
 	 	 	fd12->shape=&chain2;
 	 	 	
+	 	 	///Fixutre :<b>fd13</b> in engineBox\n
+	 	 	///This fixture corresponds to chain on center of engineBody
+	 	 	b2Vec2 v5[4];
+	 	 	v5[3].Set(18.5*scale_e,-3*scale_e);
+	 	 	v5[2].Set(18.5	*scale_e,-2*scale_e);
+	 	 	v5[1].Set(17.5*scale_e,-2*scale_e);
+	 	 	v5[0].Set(17.5*scale_e,-3*scale_e);
+	 	 	b2ChainShape chain5;
+	 	 	chain5.CreateChain(v5, 4);
+	 	 	b2FixtureDef *fd13 = new b2FixtureDef;
+	 	 	fd13->density = 1;
+	 	 	fd13->friction = 0.0;
+	 	 	fd13->restitution = 1.f;
+	 	 	fd13->shape=&chain5;
+
+	 	 	///Fixutre :<b>fd14</b> in engineBox\n
+	 	 	///This fixture corresponds to horizontal body which looks like rails located on\n
+	 	 	///part of engine.fd14 denotes top rail
+	 	 	b2FixtureDef *fd14 = new b2FixtureDef;
+	 	 	fd14->density = 1;
+	 	 	fd14->friction = 0.0;
+	 	 	fd14->restitution = 1.f;
+	 	 	fd14->filter.groupIndex =-1; 
+	 	 	fd14->shape = new b2PolygonShape;
+	 	 	b2PolygonShape bs14;
+	 	 	bs14.SetAsBox(3.2*scale_e,0.1*scale_e, b2Vec2(12.f*scale_e,-6.7f*scale_e+1.8), 0);
+	 	 	fd14->shape = &bs14;
+
+	 	
+	 		///Fixutre :<b>fd15</b> in engineBox\n
+	 	 	///This fixture corresponds to horizontal body which looks like rails located on\n
+	 	 	///part of engine.fd15 denotes bottom rail
+	 	 	b2FixtureDef *fd15 = new b2FixtureDef;
+	 	 	fd15->density = 1;
+	 	 	fd15->friction = 0.0;
+	 	 	fd15->restitution = 1.f; 
+	 	 	fd15->shape = new b2PolygonShape;
+	 	 	b2PolygonShape bs15;
+	 	 	bs15.SetAsBox(3.2*scale_e,0.1*scale_e, b2Vec2(12.f*scale_e,-6.7f*scale_e-1.8), 0);
+	 	 	fd15->shape = &bs15;
+ 			fd15->filter.groupIndex =-1;
 	 	 	engineBox = m_world->CreateBody(bd);
 	 	 	engineBox->CreateFixture(fd1);
 	 	 	engineBox->CreateFixture(fd2);
@@ -712,6 +726,7 @@
 	 	 	engineBox->CreateFixture(fd14);
 	 	 	engineBox->CreateFixture(fd15);
 	 	 }
+	 	 ///<hr>
 	 	 /// <b>Revoulte</b> joints between EngineBox and wheels
 	 	 ///1)The revolutejoint between engineBox and wheel1
 	 	 {
@@ -745,8 +760,8 @@
 	 	 	jointDef5.localAnchorB = b2Vec2(-xpos_e+4.2*wheelRadius,-ypos_e+wheelRadius);
 	 	 	(b2RevoluteJoint*)m_world->CreateJoint(&jointDef5);
 	 	 }
-
-	 	 ///The defination of exhaust body <b>ext1</b> \n
+	 	 ///<hr>
+	 	 ///The definition of exhaust body <b>ext1</b> \n
 	 	 ///This has setUserdata as value 2
 	 	 {       
 	 	 	b2BodyDef exhaustbd;
@@ -767,7 +782,7 @@
 	 	 	ext1->SetUserData(ls);
 	 	 }
 
-	 	 ///           <b>Weld<\b> joint between engineBox and exhuast1\n
+	 	 ///<b>Weld<\b> joint between engineBox and exhuast1\n
 	 	 {
 	 	 	b2WeldJointDef weldJointDef;
 	 	 	weldJointDef.bodyA = engineBox;
@@ -778,7 +793,7 @@
 	 	 	(b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
 	 	 }
 	 	 
-	 	 ///The defination of exhaust body <b>ext2</b>\n
+	 	 ///The definition of exhaust body <b>ext2</b>\n
 	 	 ///This has setUser data as value 3\n
 	 	 {       
 	 	 	b2BodyDef exhaustbd;
@@ -799,7 +814,7 @@
 	 	 	ext2->SetUserData(ls);
 	 	 }
 
-	 	 ///             <b>Weld</b> joint between engineBox and exhuast2\n
+	 	 ///<b>Weld</b> joint between engineBox and exhuast2\n<hr>
 	 	 {
 	 	 	b2WeldJointDef weldJointDef;
 	 	 	weldJointDef.bodyA = engineBox;
@@ -809,8 +824,7 @@
 	 	 	weldJointDef.localAnchorB.Set(0,0);
 	 	    (b2WeldJoint*)m_world->CreateJoint( &weldJointDef );
 	 	 }
-
-	 	 ///<b> Revolute Joints </b> which connect 3- wheel system to <b>trainBox</b> and <b>engineBody</b>
+	 	 ///<b> Revolute Joints </b> which connect 3- wheel system to <b>trainBox</b> and <b>engineBody</b>\n
 	 	 {	
 			///1)revolutejoint between rod4 and enginebox\n
 	 	 	b2RevoluteJointDef jointDef;

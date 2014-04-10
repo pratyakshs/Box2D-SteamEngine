@@ -28,7 +28,6 @@
 namespace cs296
 {
   //! This is the class that sets up the Box2D simulation world
-  //! Notice the public inheritance - why do we inherit the base_sim_t class?
   class dominos_t : public base_sim_t
   {
   public:

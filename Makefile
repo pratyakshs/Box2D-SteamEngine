@@ -22,8 +22,9 @@ EXTERNAL_ROOT=$(PROJECT_ROOT)/external
 SRCDIR = $(PROJECT_ROOT)/src
 OBJDIR = $(PROJECT_ROOT)/myobjs
 BINDIR = $(PROJECT_ROOT)/mybins
-LIBDIR = $(PROJECT_ROOT)/mylibs
 DOCDIR = $(PROJECT_ROOT)/doc
+INSTALLDIR = $(PROJECT_ROOT)
+IMAGEDIR = $(PROJECT_ROOT)/images
 
 # Library Paths
 BOX2D_ROOT=$(EXTERNAL_ROOT)
@@ -62,9 +63,10 @@ OBJS := $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
 .PHONY: all setup doc clean distclean exe static dynamic exelib mylibs
 
+all:setup doc
+
 setup:
 	@$(ECHO) "Setting up compilation..."
-	@mkdir -p mylibs
 	@mkdir -p myobjs
 	@mkdir -p mybins
 	@if [test -e $(PROJECT_ROOT)/external/lib/libBox2D.a] && [test -e $(EXTERNAL_ROOT)/include/Box2D];\
@@ -106,34 +108,20 @@ doc:
 clean:
 	@$(ECHO) -n "Cleaning up..."
 	@$(RM) -rf $(BINDIR) $(LIBDIR) $(OBJDIR)
-	@$(RM) -rf $(DOCDIR)/html
-	@$(RM) -rf $(DOCDIR)/latex cs296_report_09.bbl $(DOCDIR)/latex cs296_report_09.aux $(DOCDIR)/latex cs296_report_09.dvi $(DOCDIR)/latex cs296_report_09.log $(DOCDIR)/latex cs296_report_09.pdf  
+	
 
 distclean: clean
 	@$(RM) -rf $(BINDIR) $(DOCDIR)/html
 	@$(RM) -rf $(EXTERNAL_ROOT)/src/Box2D
 	@$(RM) -rf $(EXTERNAL_ROOT)/lib/libBox2D.a
 	@$(RM) -rf $(EXTERNAL_ROOT)/include/Box2D
-	
-static: 
-	@find $(OBJDIR) -type f -not -name 'main.o'  | xargs ar -cvq $(LIBDIR)/libCS296test.a 
 
-dynamic:
-	@find $(OBJDIR) -type f -not -name 'main.o' -not -name '*.d' | xargs gcc -shared -Wl $(CPPFLAGS),-soname,$(LIBDIR)/libCS296test.so -o $(LIBDIR)/libCS296test.so 
-#dynamic:
-	#@cd $(PROJECT_ROOT)/myobjs;pwd ; g++ -shared -W1,-soname,libCS296test.so -o libCS296test.so *o
-#exelib: static
-	#if [$(SHARED_LIB) = FALSE] ; \
-	 #g++ -o cs296_09_exelib $(LDFLAGS) $(PROJECT_ROOT)/mylibs/libCS296test.a $(OBJDIR)/main.o; \
-	#else g++ -o cs296_09_exelib $(LDFLAGS) $(PROJECT_ROOT)/mylibs/libCS296test.so $(OBJDIR)/main.o;fi;
+dist: distclean
+	@cd ../../;tar cvzf cs296-g09-project.tar.gz cs296-g09-project 
 
-mylibs: 
-	@if test $(SHARED_LIB) = FALSE; then make -s static; else make -s dynamic; fi
-
-exelib: setup $(OBJS) mylibs
-	@if test $(SHARED_LIB) = FALSE; \
-	then $(CC) -o $(BINDIR)/cs296_09_exelib $(LDFLAGS) $(OBJDIR)/main.o $(LIBDIR)/libCS296test.a $(LIBS); \
-	else $(CC) -o $(BINDIR)/cs296_09_exelib $(LDFLAGS) $(OBJDIR)/main.o $(LIBDIR)/libCS296test.so $(LIBS); \
-	fi;
-report: 
-	@cd $(DOCDIR); latex cs296_report_09.tex; bibtex cs296_report_09; latex cs296_report_09.tex; latex cs296_report_09.tex; latex cs296_report_09.tex; convert cs296_report_09.dvi cs296_report_09.pdf
+install:exe
+	@cd $(INSTALLDIR);mkdir -p steam_engine;
+	@cp -r $(BINDIR) $(INSTALLDIR)/steam_engine
+	@cp -r $(DOCDIR) $(INSTALLDIR)/steam_engine
+	@cp -r $(IMAGEDIR) $(INSTALLDIR)/steam_engine
+	@make clean 
